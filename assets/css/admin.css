@@ -1,0 +1,134 @@
+#icon-edit.icon32-posts-events { 
+	background:transparent url('../img/icon-large.png') no-repeat; 
+}     
+
+#adminmenu #menu-posts-events div.wp-menu-image{
+	background:transparent url('../img/icon-grey.png') no-repeat center center;
+}
+
+#adminmenu #menu-posts-events:hover div.wp-menu-image,
+#adminmenu #menu-posts-events.wp-has-current-submenu div.wp-menu-image{
+	background:transparent url('../img/icon.png') no-repeat center center;
+}  
+
+.input.text{
+	overflow: hidden;
+	width:100%;
+}
+
+.input.text label{
+	width:100px;
+	margin-right: 10px;
+	text-align: right;
+	display: block;
+	float:left;
+}
+
+.input.text input{
+	float:left;
+}
+
+.input.select label{
+	display: inline-block;
+	width:100px;
+	margin-right: 10px;
+	text-align: right;
+}
+
+.input.checkbox{
+	overflow: hidden;
+}
+.input.checkbox .option{
+	float:left;
+	margin-right: 5px;
+}
+
+fieldset#recurrence_fields{
+	margin-left:115px;
+	margin-top:10px;
+}
+
+.input.radio{
+	overflow: hidden;
+	margin:8px 0;
+}
+
+.input.radio > label{
+	width:100px;
+	margin-right: 10px;
+	text-align: right;
+	display: block;
+	float:left;
+}
+.input.radio .option{
+	float:left;
+	margin-left: 5px;
+	margin-right: 10px;
+}
+
+.simple_events #category-all{
+	border: 1px solid #DDD;
+	width: 96%;
+	padding: 2%;
+	background: white;
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+#calendar_list{
+	width:100%;
+}
+
+/**
+ * Admin Calendar Styles
+ */
+
+.event-list a{
+	color:#FFF;
+	text-decoration: none;
+}
+
+.cal{
+	width:100%;
+}
+.cal-nav{
+	width:100%;
+	text-align: center;
+}
+.cal-nav a, .cal-nav span{
+	margin:0 2px;
+}
+
+.prev-next .date{
+	color:#DDD;
+}
+
+.cal-weekdays, .cal-days-row{
+	width:100%;
+	overflow: hidden;
+}
+
+.cal-weekday-item, .cal-day{
+	width:14.28%;
+	float:left;
+}
+
+.cal-weekday-item{
+	font-weight: bold;
+	padding:5px 0;
+}
+
+.cal-day .cal-day-wrapper{
+	height:100px;
+	border:1px solid #EEE;
+	display: block;
+	padding:5px;
+}
+
+.cal-day-wrapper li{
+	background: red;
+	color:#FFF;
+	padding:1px;
+	text-indent: 5px;
+	font-size: 10px;
+}
