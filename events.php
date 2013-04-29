@@ -52,7 +52,7 @@ class JCEvents{
 		register_post_type( $this->events_pt, 
 			array(
 				'capability_type' => 'post',
-				'rewrite' => array('slug' => ''),
+				'rewrite' => array('slug' => 'easy_events'),
 				'query_var' => true,
 				'has_archive' => true,
 				'show_in_nav_menus' => true,
@@ -82,7 +82,7 @@ class JCEvents{
 		register_post_type( $this->recurring_events_pt, 
 			array(
 				'capability_type' => 'post',
-				'rewrite' => array('slug' => ''),
+				'rewrite' => array('slug' => 'easy_revents'),
 				'query_var' => true,
 				'has_archive' => false,
 				'show_in_nav_menus' => false,
@@ -119,6 +119,7 @@ class JCEvents{
 	function register_query_vars($public_query_vars) {
 		$public_query_vars[] = 'xyear';
 		$public_query_vars[] = 'xyear';
+		$public_query_vars[] = 'event_id';
 		return $public_query_vars;
 	}
 

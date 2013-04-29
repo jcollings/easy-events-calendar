@@ -92,20 +92,6 @@ class EventsModel{
 		AND wp_posts.post_type IN ('events', 'recurring_events') 
 		AND (wp_posts.post_status = 'publish') ";
 
-		// switch(self::$calendar){
-		// 	case 'public':
-		// 		$query['where'] .= "
-		// 		AND (mt5.meta_key = '_event_calendar' AND ((CAST(mt5.meta_value AS CHAR) = 'public') OR (CAST(mt5.meta_value AS CHAR) = 'all' )))";
-		// 	break;
-		// 	case 'club':
-		// 		$query['where'] .= "
-		// 		AND (mt5.meta_key = '_event_calendar' AND ((CAST(mt5.meta_value AS CHAR) = 'club') OR (CAST(mt5.meta_value AS CHAR) = 'all' )))";
-		// 	break;
-		// 	case 'all':
-		// 	default:
-		// 	break;
-		// }
-
 		$query['where'] .= " 
 		AND( 
 			(wp_postmeta.meta_key = '_event_start_date'
@@ -124,7 +110,7 @@ class EventsModel{
 	function get_events($limit = 0, $offset = 0)
 	{
 		$args = array(
-			'post_type' => 'events',
+			'post_type' => array('events', 'recurring_events'),
 			'post_status'	=> 'publish',
 			'order'		=> 'ASC',
 			'orderby'	=> 'meta_value',
@@ -136,6 +122,17 @@ class EventsModel{
 		if(intval($offset) > 0)
 			$args['offset'] = $offset;
 		
+		return new WP_Query( $args );
+	}
+
+	function get_event($event_id)
+	{
+		$args = array(
+			'post_type' => array('events', 'recurring_events'),
+			'post_status'	=> 'publish',
+			'p' => $event_id,
+			'posts_per_page' => 1
+		);		
 		return new WP_Query( $args );
 	}
 
@@ -167,15 +164,8 @@ class EventsModel{
 			}
 		}
 
-		// $values['_event_start_date'] = get_post_meta( $post_id, '_event_start_date', true );		
-		// if(strtotime($values['_event_start_date']) < time()){
-		// 	$values['_event_start_date'] = $default['_event_start_date'];
-		// }
-
 		$values['_event_end_date'] = get_post_meta( $post_id, '_event_end_date', true );		
-		// if(strtotime($values['_event_end_date']) < time()){
-		// 	$values['_event_end_date'] = $default['_event_end_date'];
-		// }
+		
 		if(strtotime($values['_event_start_date']) > strtotime($values['_event_end_date'])){
 			$values['_event_end_date'] = $values['_event_start_date'];
 		}
