@@ -1,5 +1,5 @@
 <?php 
-add_shortcode( 'easy_event_cal', 'jc_events_calendar' );
+// add_shortcode( 'easy_event_cal', 'jc_events_calendar' );
 function jc_events_calendar($atts = array()){
 
 	/**

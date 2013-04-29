@@ -127,9 +127,9 @@ foreach($cal_terms as $term){
 					}else{
 						$parent = $e['parent'];
 					}
-
+					// add_query_arg('event_id', $e['id'])
 					if(!empty($temp)){
-						echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'.add_query_arg('event_id', $e['id']).'">'.$e['title'].'</a></li>'."\n";	
+						echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'.get_permalink( $e['id'] ) .'">'.$e['title'].'</a></li>'."\n";	
 					}else{
 						echo '<li class="event-list">'.$e['title'].'</li>'."\n";	
 					}

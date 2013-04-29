@@ -1,8 +1,9 @@
+<?php get_header(); ?>
+
 <?php 
-$event = EventsModel::get_event($event_id);
-if($event->have_posts()): ?>
-	<p><a href="<?php echo remove_query_arg( 'event_id' ); ?>">&larr;Back to events</a></p>
-	<?php while($event->have_posts()): $event->the_post(); ?>
+if(have_posts()): ?>
+	<p><a href="<?php echo eec_get_permalink(); ?>">&larr;Back to events</a></p>
+	<?php while(have_posts()): the_post(); ?>
 		<article>
 			<div class="meta-head">
 				<h1><?php the_title(); ?></h1>
@@ -17,3 +18,5 @@ if($event->have_posts()): ?>
 endif;
 wp_reset_postdata();
 ?>
+
+<?php get_footer(); ?>

@@ -29,7 +29,8 @@ class EventsModel{
 
 		$query = new WP_Query(array(
 			'post_parent' => $post_id,
-			'post_type' => 'recurring_events',
+			// 'post_type' => 'recurring_events',
+			'post_type' => 'events',
 			'nopaging' => true
 		));
 

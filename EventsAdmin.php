@@ -34,7 +34,17 @@ class EventsAdmin{
 		add_action( 'load-post-new.php', array($this, 'setup_metabox' ));
 		add_action( 'save_post', array($this, 'save_metabox'), 10, 2 );
 
-		
+		// hide recuring events
+		add_filter('parse_query',array($this, 'hide_recurring_events'));
+	}
+
+
+	function hide_recurring_events($query) {
+	    global $pagenow;
+	    $qv = &$query->query_vars;
+	    if($pagenow == 'edit.php' && $qv['post_type'] == 'events'){
+	    	$qv['post_parent'] = 0;
+	    }
 	}
 
 	public function add_user_menu_notifications() {
@@ -96,7 +106,7 @@ class EventsAdmin{
 
 	public function save_metabox($post_id, $post)
 	{
-		if ( !isset( $_POST[$this->meta_key.'_nonce'] ) || !wp_verify_nonce( $_POST[$this->meta_key.'_nonce'], basename( __FILE__ ) ) || $post->post_type != 'events')
+		if ( !isset( $_POST[$this->meta_key.'_nonce'] ) || !wp_verify_nonce( $_POST[$this->meta_key.'_nonce'], basename( __FILE__ ) ) || $post->post_type != 'events' || $post->post_parent != 0)
 			return $post_id;
 		
 		// Get the post type object. 
@@ -126,17 +136,6 @@ class EventsAdmin{
 		$end_minute = $_POST[$this->meta_id]['_event_end_date_minute'];
 		$end_second = $_POST[$this->meta_id]['_event_end_date_second'];
 		$_POST[$this->meta_id]['_event_end_date'] = $end_day.' '.$end_hour.':'.$end_minute.':'.$end_second;
-
-		// switch($_POST[$this->meta_id]['_event_calendar']){
-		// 	case 'public':
-		// 	break;
-		// 	case 'club':
-		// 	break;
-		// 	case 'all':
-		// 	default:
-		// 	$_POST[$this->meta_id]['_event_calendar'] = 'all';
-		// 	break;
-		// }
 
 		if(!empty($_POST[$this->meta_id]['_recurrence_type'])){
 			switch($_POST[$this->meta_id]['_recurrence_type']){
@@ -173,7 +172,8 @@ class EventsAdmin{
 				$rec = $i * $_POST[$this->meta_id]['_recurrence_space'];
 
 				$event_id = wp_insert_post(array(
-					'post_type' => 'recurring_events',
+					// 'post_type' => 'recurring_events',
+					'post_type' => 'events',
 					'post_parent' => $post_id,
 					'post_title' => $post->post_title,
 					'post_content' => $post->post_content,
