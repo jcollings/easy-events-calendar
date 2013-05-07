@@ -44,8 +44,8 @@ class JCEvents{
 		add_action('query_vars', array($this, 'register_query_vars') );
 		
 		// http://codex.wordpress.org/Function_Reference/WP_Rewrite
-		add_action('init', array($this, 'events_rewrite'));
-		add_filter('post_type_link', array($this, 'events_permalink'), 1, 3);
+		// add_action('init', array($this, 'events_rewrite'));
+		// add_filter('post_type_link', array($this, 'events_permalink'), 1, 3);
 
 		add_filter( 'template_include', array($this, 'template_include') );
 
@@ -127,7 +127,9 @@ class JCEvents{
 	 */
 	function register_query_vars($public_query_vars) {
 		$public_query_vars[] = 'xyear';
-		$public_query_vars[] = 'xyear';
+		$public_query_vars[] = 'xmonth';
+		$public_query_vars[] = 'xday';
+		$public_query_vars[] = 'xname';
 		$public_query_vars[] = 'event_id';
 		$public_query_vars[] = 'event_title';
 		$public_query_vars[] = 'view';
@@ -135,9 +137,65 @@ class JCEvents{
 	}
 
 	function template_include($template){
-		global $post;
+		global $post, $wp_query, $wp_rewrite;
+		
+		$single_event = false;
+		$month = get_query_var( 'xmonth' );
+		$year = get_query_var( 'xyear' );
+		$day = get_query_var( 'xday' );
+		$name = get_query_var( 'xname' );
+
+		if($month > 0 && $year > 0){
+			if($day > 0){
+				$query = new WP_Query(array(
+					'post_type' => array('events', 'recurring_events'),
+					'name' => $name,
+					'meta_query' => array(
+						array(
+							'key' => '_event_start_date',
+							'value' => $year.'-'.$month.'-'. $day, // '20/'.$month.'/'.$year,
+							'compare' => '=',
+							'type' => 'DATE'
+						)
+					)
+				));
+				$single_event = true;
+				$post = $query->post;	
+			}else{
+				$query = new WP_Query(array(
+					'post_type' => array('events', 'recurring_events'),
+					'name' => $name,
+					'meta_query' => array(
+						'relation' => 'AND',
+						array(
+							'key' => '_event_start_date',
+							'value' => $year.'-'.$month.'-01', // '20/'.$month.'/'.$year,
+							'compare' => '>=',
+							'type' => 'DATE'
+						),
+						array(
+							'key' => '_event_start_date',
+							'value' => $year.'-'.$month.'-31', // '20/'.$month.'/'.$year,
+							'compare' => '<=',
+							'type' => 'DATE'
+						)
+					)
+				));
+				
+				$post = $query->post;
+
+				$temp_file = get_template_directory() . DIRECTORY_SEPARATOR . 'simple-events-calendar' . DIRECTORY_SEPARATOR . 'event-index-template.php';
+				if(is_file($temp_file)){
+					return $temp_file;
+				}else{
+					return plugin_dir_path( __FILE__ ).'views/public/event-index-template.php';
+				}
+			}
+		}
+
 		if($post && is_event($post->ID)){
-			if(is_single()){
+
+			if(is_single($post->ID) || $single_event){
 				$temp_file = get_template_directory() . DIRECTORY_SEPARATOR . 'simple-events-calendar' . DIRECTORY_SEPARATOR . 'event-single-template.php';
 				if(is_file($temp_file)){
 					return $temp_file;
@@ -154,30 +212,6 @@ class JCEvents{
 			}
 		}
 		return $template;	
-	}
-
-	function events_rewrite() {
-		global $wp_rewrite;
-
-		$queryarg = 'post_type=events&p=';
-		$wp_rewrite->add_rewrite_tag('%event_title%', '([^/]+)', '');
-		$wp_rewrite->add_rewrite_tag('%event_id%', '([^/]+)', $queryarg);
-		$wp_rewrite->add_permastruct('events', '/events/%event_id%/%event_title%', false);
-	}
-
-
-	function events_permalink($post_link, $id = 0, $leavename) {
-		global $wp_rewrite;
-		$post = &get_post($id);
-
-		if ( is_wp_error( $post ) )
-			return $post;
-
-		$newlink = $wp_rewrite->get_extra_permastruct('events');
-		$newlink = str_replace("%event_id%", $post->ID, $newlink);
-		$newlink = str_replace("%event_title%", strtolower(urlencode($post->post_title)), $newlink);
-		$newlink = home_url(user_trailingslashit($newlink));
-		return $newlink;
 	}
 
 	function activation(){
@@ -218,4 +252,45 @@ class JCEvents{
 
 }
 
+/**
+ * Temp Work around WIP
+ */
+global $my_rewrite_rules;
+$my_rewrite_rules = array(
+	'events/([0-9]+)/([0-9]+)/?$' => 'events/%xyear%/%xmonth%/',
+	'events/([0-9]+)/([0-9]+)/([0-9]+)/(.+?)/?$' => 'events/%xyear%/%xmonth%/%xday%/%xname%/'
+);
+
+function add_rewrite_rules( $wp_rewrite ) 
+{
+	global $my_rewrite_rules;
+	$new_rules = array(
+		'events/([0-9]+)/([0-9]+)/?$' => 'index.php?post_type=events&xyear='. $wp_rewrite->preg_index(1).'&xmonth='. $wp_rewrite->preg_index(2),
+		'events/([0-9]+)/([0-9]+)/([0-9]+)/(.+?)/?$' => 'index.php?xyear='. $wp_rewrite->preg_index(1).'&xmonth='. $wp_rewrite->preg_index(2).'&xday='. $wp_rewrite->preg_index(3).'&xname='. $wp_rewrite->preg_index(4),
+	);
+    
+	$wp_rewrite->rules = $new_rules + $wp_rewrite->rules;
+}
+add_action('generate_rewrite_rules', 'add_rewrite_rules');
+
+
+
+function change_event_links($post_link, $id=0){
+	global $wp_rewrite, $wp, $my_rewrite_rules;
+
+	$post = get_post($id);
+
+	if( is_object($post) &&$post->post_type == 'events'){
+		$time = strtotime(get_post_meta( $post->ID, '_event_start_date', true ));
+		$url = 'events/%xyear%/%xmonth%/%xday%/%xname%/';
+		$url = str_replace('%xyear%', date('Y', $time), $url);
+		$url = str_replace('%xmonth%', date('m', $time), $url);
+		$url = str_replace('%xday%', date('d', $time), $url);
+		$url = str_replace('%xname%', $post->post_name, $url);
+		return home_url($url);
+	}
+
+	return $post_link;
+}
+add_filter('post_type_link', 'change_event_links', 1, 3);
 ?>

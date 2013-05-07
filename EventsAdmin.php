@@ -178,7 +178,8 @@ class EventsAdmin{
 					'post_title' => $post->post_title,
 					'post_content' => $post->post_content,
 					'post_author'   => 1,
-					'post_status' => 'publish'
+					'post_status' => 'publish',
+					'post_name' => $post->post_name
 				));
 
 				switch($_POST[$this->meta_id]['_recurrence_type']){
