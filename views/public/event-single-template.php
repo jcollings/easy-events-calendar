@@ -9,7 +9,6 @@ $name = get_query_var( 'xname' );
 
 $query = new WP_Query(array(
 	'post_type' => array('events', 'recurring_events'),
-	'name' => $name,
 	'meta_query' => array(
 		array(
 			'key' => '_event_start_date',
@@ -19,7 +18,6 @@ $query = new WP_Query(array(
 		)
 	)
 ));
-
 ?>
 
 <?php 

@@ -173,24 +173,46 @@ class jc_events_calendar{
 	}
 
 	function output_cal_header(){
-		global $post;
+		global $post, $wp_rewrite;
 
-		// generate cal links
-		if($this->month == 1){
-			$prev_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
-			$next_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
-			$prev_month_link = add_query_arg(array('xmonth' => 12, 'xyear' => $this->year -1));
-			$next_month_link = add_query_arg(array('xmonth' => $this->month+1, 'xyear' => $this->year));
-		}elseif($this->month == 12){
-			$prev_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
-			$next_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
-			$prev_month_link = add_query_arg(array('xmonth' => $this->month-1, 'xyear' => $this->year));
-			$next_month_link = add_query_arg(array('xmonth' => 1, 'xyear' => $this->year+1));
+		if($wp_rewrite->permalink_structure){
+
+			// generate cal links
+			if($this->month == 1){
+				$prev_year_link = home_url('events/'.($this->year-1) . '/'.$this->month.'/'); // add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
+				$next_year_link = home_url('events/'.($this->year+1) . '/'.$this->month .'/'); // add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
+				$prev_month_link = home_url('events/'.($this->year-1) . '/12/'); //add_query_arg(array('xmonth' => 12, 'xyear' => $this->year -1));
+				$next_month_link = home_url('events/'.$this->year . '/'. ($this->month+1) .'/');// add_query_arg(array('xmonth' => $this->month+1, 'xyear' => $this->year));
+			}elseif($this->month == 12){
+				$prev_year_link = home_url('events/' . ($this->year-1) . '/' . ($this->month) . '/'); //add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
+				$next_year_link = home_url('events/' . ($this->year+1) . '/' . ($this->month) . '/');//add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
+				$prev_month_link = home_url('events/' . ($this->year-1) . '/' . ($this->month-1) . '/');//add_query_arg(array('xmonth' => $this->month-1, 'xyear' => $this->year));
+				$next_month_link = home_url('events/' . ($this->year+1) . '/' . (1) . '/');//add_query_arg(array('xmonth' => 1, 'xyear' => $this->year+1));
+			}else{
+				$prev_year_link = home_url('events/' . ($this->year-1) . '/' . ($this->month) . '/');//add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
+				$next_year_link = home_url('events/' . ($this->year+1) . '/' . ($this->month) . '/');//add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
+				$prev_month_link = home_url('events/' . ($this->year) . '/' . ($this->month-1) . '/');//add_query_arg(array('xmonth' => $this->month-1, 'xyear' => $this->year));
+				$next_month_link = home_url('events/' . ($this->year) . '/' . ($this->month+1) . '/');//add_query_arg(array('xmonth' => $this->month+1, 'xyear' => $this->year));
+			}
+
 		}else{
-			$prev_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
-			$next_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
-			$prev_month_link = add_query_arg(array('xmonth' => $this->month-1, 'xyear' => $this->year));
-			$next_month_link = add_query_arg(array('xmonth' => $this->month+1, 'xyear' => $this->year));
+			// generate cal links
+			if($this->month == 1){
+				$prev_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
+				$next_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
+				$prev_month_link = add_query_arg(array('xmonth' => 12, 'xyear' => $this->year -1));
+				$next_month_link = add_query_arg(array('xmonth' => $this->month+1, 'xyear' => $this->year));
+			}elseif($this->month == 12){
+				$prev_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
+				$next_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
+				$prev_month_link = add_query_arg(array('xmonth' => $this->month-1, 'xyear' => $this->year));
+				$next_month_link = add_query_arg(array('xmonth' => 1, 'xyear' => $this->year+1));
+			}else{
+				$prev_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year-1));
+				$next_year_link = add_query_arg(array('xmonth' => $this->month, 'xyear' => $this->year+1));
+				$prev_month_link = add_query_arg(array('xmonth' => $this->month-1, 'xyear' => $this->year));
+				$next_month_link = add_query_arg(array('xmonth' => $this->month+1, 'xyear' => $this->year));
+			}
 		}
 
 		$output = '<div class="cal-nav">'."\n";

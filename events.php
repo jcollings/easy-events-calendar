@@ -149,7 +149,6 @@ class JCEvents{
 			if($day > 0){
 				$query = new WP_Query(array(
 					'post_type' => array('events', 'recurring_events'),
-					'name' => $name,
 					'meta_query' => array(
 						array(
 							'key' => '_event_start_date',
@@ -181,8 +180,8 @@ class JCEvents{
 						)
 					)
 				));
-				
-				$post = $query->post;
+				if(isset($query->post))
+					$post = $query->post;
 
 				$temp_file = get_template_directory() . DIRECTORY_SEPARATOR . 'simple-events-calendar' . DIRECTORY_SEPARATOR . 'event-index-template.php';
 				if(is_file($temp_file)){
@@ -282,11 +281,28 @@ function change_event_links($post_link, $id=0){
 
 	if( is_object($post) &&$post->post_type == 'events'){
 		$time = strtotime(get_post_meta( $post->ID, '_event_start_date', true ));
-		$url = 'events/%xyear%/%xmonth%/%xday%/%xname%/';
+
+		if($post->post_parent > 0){
+			$q = new WP_Query(array(
+				'p' => $post->post_parent,
+				'post_type' => array('events', 'recurring_events')
+			));
+			$name = $q->post->post_name;
+		}else{
+			$name = $post->post_name;
+		}
+
+		if(empty($wp_rewrite->permalink_structure)){
+			$url = '?post_type=events&xyear=%xyear%&xmonth=%xmonth%&xday=%xday%&xname=%xname%';
+		}else{
+			$url = 'events/%xyear%/%xmonth%/%xday%/%xname%/';	
+		}
+
+		
 		$url = str_replace('%xyear%', date('Y', $time), $url);
 		$url = str_replace('%xmonth%', date('m', $time), $url);
 		$url = str_replace('%xday%', date('d', $time), $url);
-		$url = str_replace('%xname%', $post->post_name, $url);
+		$url = str_replace('%xname%', $name, $url);
 		return home_url($url);
 	}
 

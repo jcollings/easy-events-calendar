@@ -36,9 +36,12 @@ function jc_events_calendar($atts = array()){
 				case 'calendar':
 				default:
 					$jc_events_calendar = new jc_events_calendar();
+
+					$month =get_query_var( 'xmonth' );
+					$year = get_query_var( 'xyear' );
 					
-					$year = isset($_GET['xyear']) ? $_GET['xyear'] : false;
-					$month = isset($_GET['xmonth']) ? $_GET['xmonth'] : false;
+					// $year = isset($_GET['xyear']) ? $_GET['xyear'] : false;
+					// $month = isset($_GET['xmonth']) ? $_GET['xmonth'] : false;
 					$jc_events_calendar->prev_year_link = false;
 					$jc_events_calendar->next_year_link = false;
 					$jc_events_calendar->set_week_start('Sun');
