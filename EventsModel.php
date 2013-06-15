@@ -126,6 +126,40 @@ class EventsModel{
 		return new WP_Query( $args );
 	}
 
+	function get_upcoming_events($limit = 0, $offset = 0)
+	{
+		$args = array(
+			'post_type' => 'events',
+			'meta_query' => array(
+				'relation' => 'OR',
+				array(
+					'key' => '_event_start_date',
+					'value' => date('Y-m-d'), // '20/'.$month.'/'.$year,
+					'compare' => '>=',
+					'type' => 'DATE'
+				),
+				array(
+					'key' => '_event_end_date',
+					'value' => date('Y-m-d'), // '20/'.$month.'/'.$year,
+					'compare' => '>=',
+					'type' => 'DATE'
+				),
+			),
+			'post_status'	=> 'publish',
+			'order'		=> 'ASC',
+			'orderby'	=> 'meta_value',
+			'meta_key' 	=> '_event_start_date',
+			
+		);
+		if(intval($limit) > 0)
+			$args['posts_per_page'] = intval($limit);
+
+		if(intval($offset) > 0)
+			$args['offset'] = $offset;
+		
+		return new WP_Query( $args );
+	}
+
 	function get_event($event_id)
 	{
 		$args = array(
