@@ -33,6 +33,14 @@ function jc_events_calendar($atts = array()){
 						require plugin_dir_path( __FILE__ ).'views/public/archive.php';
 					}
 				break;
+				case 'upcoming':
+					$temp_file = get_template_directory() . DIRECTORY_SEPARATOR . 'simple-events-calendar' . DIRECTORY_SEPARATOR . 'upcoming.php';
+					if(is_file($temp_file)){
+						require $temp_file;
+					}else{
+						require plugin_dir_path( __FILE__ ).'views/public/upcoming.php';
+					}
+				break;
 				case 'calendar':
 				default:
 					$jc_events_calendar = new jc_events_calendar();
