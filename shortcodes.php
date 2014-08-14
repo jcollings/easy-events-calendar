@@ -1,5 +1,5 @@
 <?php 
-// add_shortcode( 'easy_event_cal', 'jc_events_calendar' );
+add_shortcode( 'easy_event_cal', 'jc_events_calendar' );
 function jc_events_calendar($atts = array()){
 
 	/**
@@ -9,7 +9,7 @@ function jc_events_calendar($atts = array()){
 	extract(shortcode_atts(array(
 		'cal' => 'all',
 		'view' => 'calendar',
-		'limit' => get_bloginfo( 'posts_per_page')
+		'limit' => get_option( 'posts_per_page')
 	), $atts));
 
 	ob_start();

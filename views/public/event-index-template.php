@@ -2,8 +2,8 @@
 
 <?php
 $view = get_query_var( 'view' );
-if($view == 'archive'){
-	echo jc_events_calendar(array('view' => 'archive'));
+if($view){
+	echo jc_events_calendar(array('view' => $view));
 }else{
 	echo jc_events_calendar();
 }

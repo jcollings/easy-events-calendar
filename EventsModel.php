@@ -23,7 +23,7 @@ class EventsModel{
 		self::$config = $config;
 	}
 
-	function trash_child_events($post_id = 0){
+	static function trash_child_events($post_id = 0){
 		if(intval($post_id) <= 0)
 			return false;
 
@@ -39,7 +39,7 @@ class EventsModel{
 		}
 	}
 
-	function get_month($year, $month, $options = array()){
+	static function get_month($year, $month, $options = array()){
 
 		if(isset($options['cal']) && !empty($options['cal']) ){
 			self::$calendar = $options['cal'];
@@ -79,7 +79,7 @@ class EventsModel{
 	}
 
 
-	function setup_month_query($query){
+	static function setup_month_query($query){
 
 		$year = self::$curr_year;
 		$month = self::$curr_month;
@@ -108,10 +108,10 @@ class EventsModel{
 		return $query;
 	}
 
-	function get_events($limit = 0, $offset = 0)
+	static function get_events($limit = 0, $offset = 0)
 	{
 		$args = array(
-			'post_type' => array('events', 'recurring_events'),
+			'post_type' => 'events',
 			'post_status'	=> 'publish',
 			'order'		=> 'ASC',
 			'orderby'	=> 'meta_value',
@@ -121,12 +121,12 @@ class EventsModel{
 			$args['posts_per_page'] = intval($limit);
 
 		if(intval($offset) > 0)
-			$args['offset'] = $offset;
+			$args['paged'] = $offset;
 		
 		return new WP_Query( $args );
 	}
 
-	function get_upcoming_events($limit = 0, $offset = 0)
+	static function get_upcoming_events($limit = 0, $offset = 0)
 	{
 		$args = array(
 			'post_type' => 'events',
@@ -155,12 +155,28 @@ class EventsModel{
 			$args['posts_per_page'] = intval($limit);
 
 		if(intval($offset) > 0)
-			$args['offset'] = $offset;
+			$args['paged'] = intval($offset);
 		
-		return new WP_Query( $args );
+		add_filter( 'posts_clauses', array(__CLASS__, 'setup_upcoming_query'), 10);
+		$result = new WP_Query( $args );
+		remove_filter( 'posts_clauses', array(__CLASS__, 'setup_upcoming_query'), 10);
+
+		return $result;
 	}
 
-	function get_event($event_id)
+	static function setup_upcoming_query($query){
+		
+		$query['where'] = " AND wp_posts.post_type = 'events' AND ((wp_posts.post_status = 'publish')) AND 
+		(wp_postmeta.meta_key = '_event_start_date'
+		AND  (CAST(mt1.meta_value AS DATE) >= '".date('Y-m-d')."')
+		OR (CAST(mt2.meta_value AS DATE) >= '".date('Y-m-d')."') )
+		AND (mt1.meta_key = '_event_start_date'
+		AND mt2.meta_key = '_event_end_date' )";
+
+		return $query;
+	}
+
+	static function get_event($event_id)
 	{
 		$args = array(
 			'post_type' => array('events', 'recurring_events'),
@@ -171,7 +187,7 @@ class EventsModel{
 		return new WP_Query( $args );
 	}
 
-	function get_event_meta($post_id)
+	static function get_event_meta($post_id)
 	{
 		$values = array();
 		$default = array(
@@ -208,7 +224,7 @@ class EventsModel{
 		return is_array($values) ? array_merge($default, $values) : $default;
 	}
 
-	function get_recurrence_type($output = true){
+	static function get_recurrence_type($output = true){
 		global $post;
 		
 		$temp = get_post_meta( $post->ID, '_recurrence_type', true );
@@ -231,7 +247,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_start_date($format = 'd-m-Y h:i:s', $id = 0, $output = true)
+	static function get_start_date($format = 'd-m-Y h:i:s', $id = 0, $output = true)
 	{
 		if($id <= 0){
 			global $post;
@@ -254,7 +270,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_end_date($format = 'd-m-Y h:i:s', $id = 0,  $output = true)
+	static function get_end_date($format = 'd-m-Y h:i:s', $id = 0,  $output = true)
 	{
 		if($id <= 0){
 			global $post;
@@ -276,7 +292,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_venue($output = true)
+	static function get_venue($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_event_venue', true );
@@ -294,7 +310,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_address($output = true)
+	static function get_address($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_event_address', true );
@@ -312,7 +328,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_city($output = true)
+	static function get_city($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_event_city', true );
@@ -330,7 +346,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_postcode($output = true)
+	static function get_postcode($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_event_postcode', true );
@@ -348,7 +364,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_organizer_name($output = true)
+	static function get_organizer_name($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_organizer_name', true );
@@ -366,7 +382,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_organizer_phone($output = true)
+	static function get_organizer_phone($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_organizer_phone', true );
@@ -384,7 +400,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_organizer_website($output = true)
+	static function get_organizer_website($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_organizer_website', true );
@@ -402,7 +418,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_organizer_email($output = true)
+	static function get_organizer_email($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_organizer_email', true );
@@ -420,7 +436,7 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	function get_price($output = true)
+	static function get_price($output = true)
 	{
 		global $post;
 		$temp = get_post_meta( $post->ID, '_event_price', true );

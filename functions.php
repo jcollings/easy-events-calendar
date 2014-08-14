@@ -25,6 +25,21 @@ function eec_get_permalink($args = array()){
 	}else{
 		if(empty($args))
 			return  add_query_arg('post_type' , 'events', site_url( '/' ));
+		elseif(isset($args['id']) && intval($args['id']) > 0){
+			return get_permalink( $args['id'] );
+		}
+	}
+}
+
+function eec_pagination($total_posts = 0, $posts_per_page = false){
+
+	if($total_posts > $posts_per_page){
+
+		// time for some pagination
+		$page_count = ceil($total_posts / $posts_per_page);
+		for($x = 1; $x <= $page_count; $x++){
+			echo '<a href="'.add_query_arg('paged', $x).'">'.$x.'</a>';
+		}
 	}
 }
 

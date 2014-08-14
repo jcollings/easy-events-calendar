@@ -1,6 +1,6 @@
 <?php  
 /*
-	Plugin Name: Easy Events Calendar
+	Plugin Name: JC Events
 	Plugin URI: http://www.jamescollings.co.uk
 	Description: Easy to install and use events calendar
 	Version: 0.0.1

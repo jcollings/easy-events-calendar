@@ -1,5 +1,5 @@
 <?php 
-$events = EventsModel::get_events($limit);
+$events = EventsModel::get_events($limit, get_query_var('paged' ));;
 if($events->have_posts()): ?>
 	<ul class="events_archive">
 	<?php while($events->have_posts()): $events->the_post(); ?>
@@ -12,5 +12,8 @@ if($events->have_posts()): ?>
 	</ul>
 <?php 
 endif;
+
+eec_pagination($events->found_posts, $events->query_vars['posts_per_page']);
+
 wp_reset_postdata();
 ?>

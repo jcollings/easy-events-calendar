@@ -163,7 +163,7 @@ class EventsAdmin{
 
 		EventsModel::trash_child_events($post_id);
 
-		if(!empty($_POST[$this->meta_id]['_recurrence_type'])){
+		/*if(!empty($_POST[$this->meta_id]['_recurrence_type'])){
 			$ocurrences = intval($_POST[$this->meta_id]['_recurrence_end']);
 			$thumb_id = get_post_meta( $post_id, '_thumbnail_id', true );
 
@@ -209,12 +209,21 @@ class EventsAdmin{
 
 			}
 
-		}else{
-			$_POST[$this->meta_id]['_recurrence_type'] = 0;
-			$_POST[$this->meta_id]['_recurrence_month_num'] = null;
-			$_POST[$this->meta_id]['_recurrence_space'] = null;
-			$_POST[$this->meta_id]['_recurrence_end'] = null;
-		}
+		}else{*/
+			// $_POST[$this->meta_id]['_recurrence_type'] = 0;
+			// $_POST[$this->meta_id]['_recurrence_month_num'] = null;
+			// $_POST[$this->meta_id]['_recurrence_space'] = null;
+			// $_POST[$this->meta_id]['_recurrence_end'] = null;
+		// }
+		// 
+		
+
+		// $my_keys = array_merge(EventsModel::$keys, array(
+		// 	'_recurrence_type'
+		// 	'_recurrence_month_num'
+		// 	'_recurrence_space'
+		// 	'_recurrence_end'
+		// ));
 
 		foreach(EventsModel::$keys as $key)
 		{
