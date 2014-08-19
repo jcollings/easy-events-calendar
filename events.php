@@ -113,6 +113,11 @@ class JCEvents{
 
 	function template_include($template){
 		global $post, $wp_query, $wp_rewrite;
+
+		// only change templates if not single or archive events
+		if(!is_post_type_archive('events') && !is_singular( 'events' )){
+			return $template;
+		}
 		
 		$single_event = false;
 		$month = get_query_var( 'xmonth' );
