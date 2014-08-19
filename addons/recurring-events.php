@@ -170,6 +170,8 @@ class JCE_RecurringEvents{
 	 */
 	public function setup_month_query($query, $month, $year){
 
+		global $wpdb;
+
 		if(intval($month) == 0){
 			$month = date('m');
 		}
@@ -182,64 +184,66 @@ class JCE_RecurringEvents{
 		$end_date = "$year-$month-31";
 
 		$query['where'] = "
-		AND (wp_posts.post_type  = 'events')
-		AND (wp_posts.post_status = 'publish')
+		AND ({$wpdb->prefix}posts.post_type  = 'events')
+		AND ({$wpdb->prefix}posts.post_status = 'publish')
 		AND 
 		(
 			(
-				wp_postmeta.meta_key = '_revent_start_date'
+				{$wpdb->prefix}postmeta.meta_key = '_revent_start_date'
 				AND mt3.meta_key = '_event_length'
 				AND  (mt1.meta_key = '_revent_start_date' AND CAST(mt1.meta_value AS DATE) >= '$start_date')
 				AND  (mt2.meta_key = '_revent_start_date' AND CAST(mt2.meta_value AS DATE) <= '$end_date') 
 			)
 			OR
 			(
-				wp_postmeta.meta_key = '_revent_start_date'
+				{$wpdb->prefix}postmeta.meta_key = '_revent_start_date'
 				AND (mt1.meta_key = '_revent_start_date' AND mt3.meta_key = '_event_length' AND CAST(DATE_ADD(mt1.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date')
 				AND (mt1.meta_key = '_revent_start_date' AND mt3.meta_key = '_event_length' AND CAST(DATE_ADD(mt1.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date')
 			)
 		)";
 
-		$query['groupby'] = "wp_postmeta.meta_id";
-		$query['orderby'] = "wp_postmeta.meta_value ASC";
-		$query['join'] = "INNER JOIN wp_postmeta ON (wp_posts.ID = wp_postmeta.post_id)
-		INNER JOIN wp_postmeta AS mt1 ON (wp_posts.ID = mt1.post_id)
-		INNER JOIN wp_postmeta AS mt2 ON (wp_posts.ID = mt2.post_id)
-		INNER JOIN wp_postmeta AS mt3 ON (wp_posts.ID = mt3.post_id)";
-		$query['fields'] = "wp_postmeta.meta_value AS start_date, DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, wp_posts.*";
+		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";
+		$query['orderby'] = "{$wpdb->prefix}postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN {$wpdb->prefix}postmeta ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt1 ON ({$wpdb->prefix}posts.ID = mt1.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt2 ON ({$wpdb->prefix}posts.ID = mt2.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt3 ON ({$wpdb->prefix}posts.ID = mt3.post_id)";
+		$query['fields'] = "{$wpdb->prefix}postmeta.meta_value AS start_date, DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, {$wpdb->prefix}posts.*";
 
 		return $query;
 	}
 
 	public function setup_upcoming_query($query, $date = false){
 
+		global $wpdb;
+
 		if($date === false){
 			$date = date('Y-m-d');
 		}
 
 		$query['where'] = "
-		AND (wp_posts.post_type  = 'events')
-		AND (wp_posts.post_status = 'publish')
+		AND ({$wpdb->prefix}posts.post_type  = 'events')
+		AND ({$wpdb->prefix}posts.post_status = 'publish')
 		AND 
 		(
 			(
-				wp_postmeta.meta_key = '_revent_start_date'
+				{$wpdb->prefix}postmeta.meta_key = '_revent_start_date'
 				AND mt3.meta_key = '_event_length'
-				AND  (CAST(wp_postmeta.meta_value AS DATE) >= '$date')
+				AND  (CAST({$wpdb->prefix}postmeta.meta_value AS DATE) >= '$date')
 				)
 			OR
 			(
-					wp_postmeta.meta_key = '_revent_start_date'
-					AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$date')
+					{$wpdb->prefix}postmeta.meta_key = '_revent_start_date'
+					AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$date')
 				)
 		)";
 
-		$query['groupby'] = "wp_postmeta.meta_id";
-		$query['orderby'] = "wp_postmeta.meta_value ASC";
-		$query['join'] = "INNER JOIN wp_postmeta ON (wp_posts.ID = wp_postmeta.post_id)
-		INNER JOIN wp_postmeta AS mt2 ON (wp_posts.ID = mt2.post_id)
-		INNER JOIN wp_postmeta AS mt3 ON (wp_posts.ID = mt3.post_id)";
-		$query['fields'] = "wp_postmeta.meta_value AS start_date, DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, wp_posts.*";
+		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";
+		$query['orderby'] = "{$wpdb->prefix}postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN {$wpdb->prefix}postmeta ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt2 ON ({$wpdb->prefix}posts.ID = mt2.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt3 ON ({$wpdb->prefix}posts.ID = mt3.post_id)";
+		$query['fields'] = "{$wpdb->prefix}postmeta.meta_value AS start_date, DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, {$wpdb->prefix}posts.*";
 		return $query;
 	}
 
