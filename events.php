@@ -24,7 +24,13 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-$JCEvents = new JCEvents();
+require_once 'class-jce-event.php';
+
+$GLOBALS['jcevents'] = new JCEvents();
+
+
+
+require_once 'addons' . DIRECTORY_SEPARATOR . 'recurring-events.php';
 
 class JCEvents{
 
@@ -32,7 +38,6 @@ class JCEvents{
 	var $plugin_dir = false;
 	var $plugin_url = false;
 	var $events_pt = 'events';
-	var $recurring_events_pt = 'recurring_events';
 
 	function __construct(){
 
@@ -86,37 +91,7 @@ class JCEvents{
 				'taxonomies' => array('event_cals'),
 				'supports' => array('title', 'editor', 'thumbnail')
 			)
-		);
-
-		register_post_type( $this->recurring_events_pt, 
-			array(
-				'capability_type' => 'post',
-				'rewrite' => array('slug' => ''),
-				'query_var' => true,
-				'has_archive' => false,
-				'show_in_nav_menus' => false,
-				'labels' => array(
-					'name' => __('Recurring Events'),
-				    'singular_name' => __('Event'),
-				    'add_new' => _x('Add New', 'event'),
-				    'add_new_item' => __('Add New Event'),
-				    'edit_item' => __('Edit Event'),
-				    'new_item' => __('New Event'),
-				    'all_items' => __('All Event'),
-				    'view_item' => __('View Event'),
-				    'search_items' => __('Search Events'),
-				    'not_found' =>  __('No events found'),
-				    'not_found_in_trash' => __('No events found in Trash'), 
-				    'parent_item_colon' => '',
-				    'menu_name' => __('Events')
-				),
-				'public' => false,
-				'taxonomies' => array('event_cals'),
-				'show_in_menu' => false
-			)
-		);
-
-		
+		);		
 	}
 
 	/**
@@ -147,22 +122,16 @@ class JCEvents{
 
 		if($month > 0 && $year > 0){
 			if($day > 0){
-				$query = new WP_Query(array(
-					'post_type' => array('events', 'recurring_events'),
-					'meta_query' => array(
-						array(
-							'key' => '_event_start_date',
-							'value' => $year.'-'.$month.'-'. $day, // '20/'.$month.'/'.$year,
-							'compare' => '=',
-							'type' => 'DATE'
-						)
-					)
-				));
-				$single_event = true;
-				$post = $query->post;	
+
+				global $jce_event;
+				$jce_event = new JCE_Event($name, $day, $month, $year);
+				
+				// set wp_query and post
+				$wp_query = $jce_event->get_wpquery();
+				$post = $wp_query->post;
 			}else{
 				$query = new WP_Query(array(
-					'post_type' => array('events', 'recurring_events'),
+					'post_type' => array('events'),
 					'name' => $name,
 					'meta_query' => array(
 						'relation' => 'AND',
@@ -195,6 +164,10 @@ class JCEvents{
 		if($post && is_event($post->ID)){
 
 			if(is_single($post->ID) || $single_event){
+
+				global $jce_event;
+				$jce_event = new JCE_Event($post->ID, $day, $month, $year);
+
 				$temp_file = get_template_directory() . DIRECTORY_SEPARATOR . 'simple-events-calendar' . DIRECTORY_SEPARATOR . 'event-single-template.php';
 				if(is_file($temp_file)){
 					return $temp_file;

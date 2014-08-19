@@ -39,7 +39,7 @@ class CalendarAdmin{
 		    'new_item_name'       => __( 'New Calendar Name' ),
 		    'menu_name'           => __( 'Calendar' )
 		); 
-		register_taxonomy( 'event_cals', array($this->config->events_pt, $this->config->recurring_events_pt), array(
+		register_taxonomy( 'event_cals', array($this->config->events_pt), array(
 			'public' => false,
 			'hierarchical' => true,
 			'labels' => $labels,  

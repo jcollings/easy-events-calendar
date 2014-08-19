@@ -13,7 +13,7 @@ jQuery(document).ready(function($){
 
 
 	$('.recurrence_specific').hide();
-	if($('#wp-engine-meta-id_recurrence_type').val() == 0){
+	if($('#wp-engine-meta-id_recurrence_type').val() == 'none'){
 		$('#recurrence_fields').hide();
 	}else{
 		$('.recurrence_'+$('#wp-engine-meta-id_recurrence_type').val()).show();	
@@ -21,7 +21,7 @@ jQuery(document).ready(function($){
 	
 	$('#wp-engine-meta-id_recurrence_type').change(function(){
 
-		if($('#wp-engine-meta-id_recurrence_type').val() == 0){
+		if($('#wp-engine-meta-id_recurrence_type').val() == 'none'){
 			$('#recurrence_fields').hide();
 		}else{
 			$('#recurrence_fields').show();

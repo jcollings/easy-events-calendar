@@ -16,19 +16,31 @@ function is_event($page_id) {
 }
 
 function eec_get_permalink($args = array()){
+
 	if(get_option('permalink_structure')){
 		if(empty($args))
-			return site_url( '/events/' );
+			$permalink = site_url( '/events/' );
 		elseif(isset($args['id']) && intval($args['id']) > 0){
-			return get_permalink( $args['id'] );
+			$permalink = get_permalink( $args['id'] );
 		}
 	}else{
 		if(empty($args))
-			return  add_query_arg('post_type' , 'events', site_url( '/' ));
+			$permalink = add_query_arg('post_type' , 'events', site_url( '/' ));
 		elseif(isset($args['id']) && intval($args['id']) > 0){
-			return get_permalink( $args['id'] );
+			$permalink = get_permalink( $args['id'] );
 		}
 	}
+
+	$date = $args['date'];
+	if($date){
+		$permalink = add_query_arg(array(
+			'xday' => date('d', strtotime($date)),
+			'xmonth' => date('m', strtotime($date)),
+			'xyear' => date('Y', strtotime($date)),
+		), $permalink);
+	}
+
+	return $permalink;
 }
 
 function eec_pagination($total_posts = 0, $posts_per_page = false){

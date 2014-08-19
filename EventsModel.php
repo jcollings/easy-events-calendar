@@ -3,7 +3,7 @@
 class EventsModel{
 	
 	static $config;
-	static $keys = array('_event_start_date', '_event_end_date', '_event_venue', '_event_address', '_event_city', '_event_postcode', '_organizer_name', '_organizer_phone', '_organizer_website', '_organizer_email', '_event_price', '_recurrence_type', '_recurrence_num', '_recurrence_space', '_recurrence_end', '_event_calendar' );
+	static $keys = array('_event_start_date', '_event_end_date', '_event_venue', '_event_address', '_event_city', '_event_postcode', '_organizer_name', '_organizer_phone', '_organizer_website', '_organizer_email', '_event_price' /*,'_recurrence_type', '_recurrence_num', '_recurrence_space', '_recurrence_end', '_event_calendar'*/ );
 	static $curr_year;
 	static $curr_month;
 	static $event = array();
@@ -46,7 +46,7 @@ class EventsModel{
 		}
 
 		$args = array(
-			'post_type' => array('events', 'recurring_events'),
+			'post_type' => 'events',
 			'post_status'	=> 'publish',
 			'order'		=> 'ASC',
 			'orderby'	=> 'meta_value',
@@ -55,13 +55,13 @@ class EventsModel{
 			'meta_query' => array(
 				'relation' => 'AND',
 				array(
-					'key' => '_event_start_date',
+					'key' => '_revent_start_date',
 					'value' => $year.'-0'.$month.'-01', // '20/'.$month.'/'.$year,
 					'compare' => '>=',
 					'type' => 'DATE'
 				),
 				array(
-					'key' => '_event_start_date',
+					'key' => '_revent_start_date',
 					'value' => $year.'-0'.$month.'-31', // '20/'.$month.'/'.$year,
 					'compare' => '<=',
 					'type' => 'DATE'
@@ -84,27 +84,37 @@ class EventsModel{
 		$year = self::$curr_year;
 		$month = self::$curr_month;
 
-		$query['join'] .= "
-		INNER JOIN wp_postmeta AS mt3 ON (wp_posts.ID = mt3.post_id)
-		INNER JOIN wp_postmeta AS mt4 ON (wp_posts.ID = mt4.post_id)
-		INNER JOIN wp_postmeta AS mt5 ON (wp_posts.ID = mt5.post_id)";
+		$start_date = "$year-$month-01";
+		$end_date = "$year-$month-31";
 
 		$query['where'] = "
-		AND wp_posts.post_type IN ('events', 'recurring_events') 
-		AND (wp_posts.post_status = 'publish') ";
-
-		$query['where'] .= " 
-		AND( 
-			(wp_postmeta.meta_key = '_event_start_date'
-				AND  (mt1.meta_key = '_event_start_date' AND CAST(mt1.meta_value AS DATE) >= '".$year.'-0'.$month.'-01'."')
-					AND  (mt2.meta_key = '_event_start_date' AND CAST(mt2.meta_value AS DATE) <= '".$year.'-0'.$month.'-31'."') 
+		AND (wp_posts.post_type  = 'events')
+		AND (wp_posts.post_status = 'publish')
+		AND 
+		(
+			(
+				wp_postmeta.meta_key = '_event_start_date'
+				AND mt3.meta_key = '_event_length'
+				AND  (mt1.meta_key = '_event_start_date' AND CAST(mt1.meta_value AS DATE) >= '$start_date')
+					AND  (mt2.meta_key = '_event_start_date' AND CAST(mt2.meta_value AS DATE) <= '$end_date') 
 			)
-			OR (wp_postmeta.meta_key = '_event_end_date'
-				AND  (mt3.meta_key = '_event_end_date' AND CAST(mt3.meta_value AS DATE) >= '".$year.'-0'.$month.'-01'."')
-				AND  (mt4.meta_key = '_event_end_date' AND CAST(mt4.meta_value AS DATE) <= '".$year.'-0'.$month.'-31'."') 
+			OR
+			(
+				wp_postmeta.meta_key = '_event_start_date'
+				AND (mt1.meta_key = '_event_start_date' AND mt3.meta_key = '_event_length' AND CAST(DATE_ADD(mt1.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date')
+				AND (mt1.meta_key = '_event_start_date' AND mt3.meta_key = '_event_length' AND CAST(DATE_ADD(mt1.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date')
 			)
 		)";
 
+		$query['groupby'] = "wp_postmeta.meta_id";
+		$query['orderby'] = "wp_postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN wp_postmeta ON (wp_posts.ID = wp_postmeta.post_id)
+		INNER JOIN wp_postmeta AS mt1 ON (wp_posts.ID = mt1.post_id)
+		INNER JOIN wp_postmeta AS mt2 ON (wp_posts.ID = mt2.post_id)
+		INNER JOIN wp_postmeta AS mt3 ON (wp_posts.ID = mt3.post_id)";
+		$query['fields'] = "wp_postmeta.meta_value AS start_date, DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, wp_posts.*";
+
+		$query = apply_filters( 'jce/setup_month_query', $query, $month, $year);
 		return $query;
 	}
 
@@ -165,13 +175,34 @@ class EventsModel{
 	}
 
 	static function setup_upcoming_query($query){
-		
-		$query['where'] = " AND wp_posts.post_type = 'events' AND ((wp_posts.post_status = 'publish')) AND 
-		(wp_postmeta.meta_key = '_event_start_date'
-		AND  (CAST(mt1.meta_value AS DATE) >= '".date('Y-m-d')."')
-		OR (CAST(mt2.meta_value AS DATE) >= '".date('Y-m-d')."') )
-		AND (mt1.meta_key = '_event_start_date'
-		AND mt2.meta_key = '_event_end_date' )";
+
+		$date = date('Y-m-d');
+
+		$query['where'] = "
+		AND (wp_posts.post_type  = 'events')
+		AND (wp_posts.post_status = 'publish')
+		AND 
+		(
+			(
+				wp_postmeta.meta_key = '_event_start_date'
+				AND mt3.meta_key = '_event_length'
+				AND  (CAST(wp_postmeta.meta_value AS DATE) >= '$date')
+			)
+			OR
+			(
+				wp_postmeta.meta_key = '_event_start_date'
+				AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$date')
+			)
+		)";
+
+		$query['groupby'] = "wp_postmeta.meta_id";
+		$query['orderby'] = "wp_postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN wp_postmeta ON (wp_posts.ID = wp_postmeta.post_id)
+		INNER JOIN wp_postmeta AS mt2 ON (wp_posts.ID = mt2.post_id)
+		INNER JOIN wp_postmeta AS mt3 ON (wp_posts.ID = mt3.post_id)";
+		$query['fields'] = "wp_postmeta.meta_value AS start_date, DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, wp_posts.*";
+
+		$query = apply_filters( 'jce/setup_upcoming_query', $query);
 
 		return $query;
 	}
@@ -247,13 +278,21 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	static function get_start_date($format = 'd-m-Y h:i:s', $id = 0, $output = true)
+	static function get_start_date($format = 'd-m-Y H:i:s', $id = 0, $output = true)
 	{
 		if($id <= 0){
-			global $post;
-			$id = $post->ID;	
+
+			global $jce_event, $post;
+			if($jce_event){
+				$temp = $jce_event->start_date;
+			}else{
+				$temp = get_post_meta( $post->ID, '_event_start_date', true );
+			}
+		}else{
+
+			$temp = get_post_meta( $id, '_event_start_date', true );
 		}
-		$temp = get_post_meta( $id, '_event_start_date', true );
+		
 		$temp = date($format, strtotime($temp));
 		if($output){
 			echo $temp;
@@ -270,13 +309,19 @@ class EventsModel{
 	 * @param  boolean $output true = echo, false = return value
 	 * @return string
 	 */
-	static function get_end_date($format = 'd-m-Y h:i:s', $id = 0,  $output = true)
+	static function get_end_date($format = 'd-m-Y H:i:s', $id = 0,  $output = true)
 	{
 		if($id <= 0){
-			global $post;
-			$id = $post->ID;	
+			global $jce_event, $post;
+			if($jce_event){
+				$temp = $jce_event->end_date;
+			}else{
+				$temp = get_post_meta( $post->ID, '_event_end_date', true );
+			}
+		}else{
+			$temp = get_post_meta( $id, '_event_end_date', true );
 		}
-		$temp = get_post_meta( $id, '_event_end_date', true );
+		
 		$temp = date($format, strtotime($temp));
 		if($output){
 			echo $temp;

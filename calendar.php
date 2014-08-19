@@ -102,11 +102,12 @@ class jc_events_calendar{
 			$main = wp_get_attachment_image_src(get_post_thumbnail_id( $event->ID ), 'cal-main' );	
 
 			// get start date details
-			$start = EventsModel::get_start_date('Y-m-d', $event->ID, false);
+			// $start = $event->
+			$start = date('Y-m-d', strtotime($event->start_date));
 			$start_atts = explode('-', $start);
 
 			// get end date details
-			$end = EventsModel::get_end_date('Y-m-d', $event->ID, false);
+			$end = date('Y-m-d', strtotime($event->end_date));
 			$end_atts = explode('-', $end);
 
 			// work out event length
@@ -125,12 +126,13 @@ class jc_events_calendar{
 							'title' => $event->post_title,
 							'content' => $event->post_content,
 							'id' => $event->ID,
-							'parent' => $event->post_parent,
+							'parent' => 0,
 							'days' => $sel_day,
 							'start' => $start,
 							'end' => $end,
 							'thumb' => $thumb[0],
-							'bg' => $main[0]
+							'bg' => $main[0],
+							'link' => eec_get_permalink(array('id' => $event->ID, 'date' => $event->start_date))
 						);
 						if(!isset($temp['tiles'][$sel_day])){
 							$temp['tiles'][$sel_day] = $thumb[0];
@@ -140,12 +142,13 @@ class jc_events_calendar{
 			}else{
 
 				if($end_atts[0] == $this->year && $end_atts[1] == $this->month){
+
 					// end date is in current month but not start date
 					$month_length = cal_days_in_month(CAL_GREGORIAN, $end_atts[1], $end_atts[0]);
 
 					for($i = 1; $i <= $end_atts[2]; $i++){
 						if($i < 10){
-							$tempi = '0'.$i;
+							$tempi = $i;
 						}else{
 							$tempi = $i;
 						}
@@ -153,11 +156,13 @@ class jc_events_calendar{
 							'title' => $event->post_title,
 							'content' => $event->post_content,
 							'id' => $event->ID,
+							'parent' => 0,
 							'days' => $tempi,
 							'start' => $start,
 							'end' => $end,
 							'thumb' => $thumb[0],
-							'bg' => $main[0]
+							'bg' => $main[0],
+							'link' => eec_get_permalink(array('id' => $event->ID, 'date' => $event->start_date))
 						);
 						if(!isset($temp['tiles'][$i])){
 							$temp['tiles'][$i] = $thumb[0];

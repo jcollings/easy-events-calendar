@@ -137,94 +137,6 @@ class EventsAdmin{
 		$end_second = $_POST[$this->meta_id]['_event_end_date_second'];
 		$_POST[$this->meta_id]['_event_end_date'] = $end_day.' '.$end_hour.':'.$end_minute.':'.$end_second;
 
-		if(!empty($_POST[$this->meta_id]['_recurrence_type'])){
-			switch($_POST[$this->meta_id]['_recurrence_type']){
-				case 'year':
-				$_POST[$this->meta_id]['_recurrence_space'] = $_POST[$this->meta_id]['_recurrence_year_space'];	
-				break;
-				case 'month':
-				$_POST[$this->meta_id]['_recurrence_space'] = $_POST[$this->meta_id]['_recurrence_month_space'];	
-				break;
-				case 'week':
-				$_POST[$this->meta_id]['_recurrence_space'] = $_POST[$this->meta_id]['_recurrence_week_space'];	
-				break;
-				case 'day':
-				$_POST[$this->meta_id]['_recurrence_space'] = $_POST[$this->meta_id]['_recurrence_day_space'];	
-				break;
-			}
-
-		}
-
-		unset($_POST[$this->meta_id]['_recurrence_year_space']);
-		unset($_POST[$this->meta_id]['_recurrence_month_space']);
-		unset($_POST[$this->meta_id]['_recurrence_week_space']);
-		unset($_POST[$this->meta_id]['_recurrence_day_space']);
-		unset($_POST[$this->meta_id]['_event_calendar']);
-
-		EventsModel::trash_child_events($post_id);
-
-		/*if(!empty($_POST[$this->meta_id]['_recurrence_type'])){
-			$ocurrences = intval($_POST[$this->meta_id]['_recurrence_end']);
-			$thumb_id = get_post_meta( $post_id, '_thumbnail_id', true );
-
-			for($i=1; $i <= $ocurrences; $i++){
-
-				$rec = $i * $_POST[$this->meta_id]['_recurrence_space'];
-
-				$event_id = wp_insert_post(array(
-					// 'post_type' => 'recurring_events',
-					'post_type' => 'events',
-					'post_parent' => $post_id,
-					'post_title' => $post->post_title,
-					'post_content' => $post->post_content,
-					'post_author'   => 1,
-					'post_status' => 'publish',
-					'post_name' => $post->post_name
-				));
-
-				switch($_POST[$this->meta_id]['_recurrence_type']){
-					case 'year':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' year'));
-						$new_end_day =date('Y-m-d H:i:s', strtotime($end_day.' + '.$rec.' year'));
-					break;
-					case 'month':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' month'));
-						$new_end_day =date('Y-m-d H:i:s', strtotime($end_day.' + '.$rec.' month'));
-					break;
-					case 'week':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' week'));
-						$new_end_day =date('Y-m-d H:i:s', strtotime($end_day.' + '.$rec.' week'));
-					break;
-					case 'day':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' day'));
-						$new_end_day =date('Y-m-d H:i:s', strtotime($end_day.' + '.$rec.' day'));
-					break;
-				}
-
-				wp_set_object_terms( $event_id, $_event_cals, 'event_cals');
-				add_post_meta( $event_id, '_event_start_date', $new_start_day);
-				add_post_meta( $event_id, '_event_end_date', $new_end_day);
-				add_post_meta( $event_id, '_thumbnail_id', $thumb_id);
-				// add_post_meta( $event_id, '_event_calendar', $_POST[$this->meta_id]['_event_calendar']);
-
-			}
-
-		}else{*/
-			// $_POST[$this->meta_id]['_recurrence_type'] = 0;
-			// $_POST[$this->meta_id]['_recurrence_month_num'] = null;
-			// $_POST[$this->meta_id]['_recurrence_space'] = null;
-			// $_POST[$this->meta_id]['_recurrence_end'] = null;
-		// }
-		// 
-		
-
-		// $my_keys = array_merge(EventsModel::$keys, array(
-		// 	'_recurrence_type'
-		// 	'_recurrence_month_num'
-		// 	'_recurrence_space'
-		// 	'_recurrence_end'
-		// ));
-
 		foreach(EventsModel::$keys as $key)
 		{
 			$name = isset( $_POST[$this->meta_id][$key] ) ?  $_POST[$this->meta_id][$key] : '' ;
@@ -237,6 +149,8 @@ class EventsAdmin{
 			elseif ( '' == $name && $value )
 				delete_post_meta( $post_id, $key, $value );
 		}
+
+		do_action('jce/save_event', $post_id);
 
 	}
 
@@ -258,7 +172,6 @@ class EventsAdmin{
 			'cb' => '<input type="checkbox" />',
 			'title' => 'Title',
 			'calendar' => 'Calendar',
-			'recurrence' => 'Recurrence',
 			'event_start' => 'Start Date',
 			'event_end' => 'End Date',
 			'date' => 'Date'
@@ -291,10 +204,6 @@ class EventsAdmin{
 					
 					$counter++;
 				}
-			break;
-
-			case 'recurrence':
-				EventsModel::get_recurrence_type();
 			break;
 		}
 	}
