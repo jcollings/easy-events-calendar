@@ -132,3 +132,7 @@ fieldset#recurrence_fields{
 	text-indent: 5px;
 	font-size: 10px;
 }
+
+.wp-admin.post-type-events .postbox h2{
+	border-bottom: 1px solid #EFEFEF;
+}

@@ -1,3 +1,10 @@
+<h2>Event Information</h2>
+<div class="input radio">
+	<label>All Day Event:</label>
+	<div class="option">
+		<input type="checkbox" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_event_all_day]" value="yes" <?php checked( $_event_all_day, 'yes', true ); ?>  />
+	</div>
+</div>
 <div class="input select required">
 	<label>Start Date:</label>
 	<input type="text" id="event_start_date" name="<?php echo $this->meta_id; ?>[_event_start_date_day]" value="<?php echo $_event_start_date['day']; ?>" />
@@ -140,7 +147,7 @@ foreach($post_event_cals as $e){
 
 do_action( 'jce/admin_meta_fields', $object, $box); ?>
 
-<!--<h2>Event Location</h2>
+<h2>Event Location</h2>
 <div class="input text">
 	<label>Venue:</label>
 	<input type="text" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_event_venue]" value="<?php echo $_event_venue; ?>" />
@@ -176,8 +183,8 @@ do_action( 'jce/admin_meta_fields', $object, $box); ?>
 	<input type="text" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_organizer_email]" value="<?php echo $_organizer_email; ?>" />
 </div>
 
-<h2>Event Cost</h2>
+<!-- <h2>Event Cost</h2>
 <div class="input text">
 	<label>Price of Event:</label>
 	<input type="text" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_event_price]" value="<?php echo $_event_price; ?>" />
-</div>-->
+</div> -->

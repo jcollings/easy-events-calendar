@@ -91,7 +91,71 @@ class JCEvents{
 				'taxonomies' => array('event_cals'),
 				'supports' => array('title', 'editor', 'thumbnail')
 			)
-		);		
+		);	
+
+		$labels = array(
+			'name'					=> _x( 'Categories', 'Taxonomy plural name', 'ytas' ),
+			'singular_name'			=> _x( 'Category', 'Taxonomy singular name', 'ytas' ),
+			'search_items'			=> __( 'Search Categories', 'ytas' ),
+			'popular_items'			=> __( 'Popular Categories', 'ytas' ),
+			'all_items'				=> __( 'All Categories', 'ytas' ),
+			'parent_item'			=> __( 'Parent Category', 'ytas' ),
+			'parent_item_colon'		=> __( 'Parent Category', 'ytas' ),
+			'edit_item'				=> __( 'Edit Category', 'ytas' ),
+			'update_item'			=> __( 'Update Category', 'ytas' ),
+			'add_new_item'			=> __( 'Add New Category', 'ytas' ),
+			'new_item_name'			=> __( 'New Category Name', 'ytas' ),
+			'add_or_remove_items'	=> __( 'Add or remove Categories', 'ytas' ),
+			'choose_from_most_used'	=> __( 'Choose from most used ytas', 'ytas' ),
+			'menu_name'				=> __( 'Categories', 'ytas' ),
+		);
+
+		$args = array(
+			'labels'            => $labels,
+			'public'            => true,
+			'show_in_nav_menus' => true,
+			'show_admin_column' => false,
+			'hierarchical'      => true,
+			'show_tagcloud'     => true,
+			'show_ui'           => true,
+			'query_var'         => 'jce_category',
+			'rewrite'           => true,
+			'capabilities'      => array(),
+		);
+
+		register_taxonomy( 'jce_category', array( $this->events_pt ), $args );	
+
+		$labels = array(
+			'name'					=> _x( 'Tags', 'Taxonomy plural name', 'ytas' ),
+			'singular_name'			=> _x( 'Tag', 'Taxonomy singular name', 'ytas' ),
+			'search_items'			=> __( 'Search Tags', 'ytas' ),
+			'popular_items'			=> __( 'Popular Tags', 'ytas' ),
+			'all_items'				=> __( 'All Tags', 'ytas' ),
+			'parent_item'			=> __( 'Parent Tag', 'ytas' ),
+			'parent_item_colon'		=> __( 'Parent Tag', 'ytas' ),
+			'edit_item'				=> __( 'Edit Tag', 'ytas' ),
+			'update_item'			=> __( 'Update Tag', 'ytas' ),
+			'add_new_item'			=> __( 'Add New Tag', 'ytas' ),
+			'new_item_name'			=> __( 'New Tag Name', 'ytas' ),
+			'add_or_remove_items'	=> __( 'Add or remove Tags', 'ytas' ),
+			'choose_from_most_used'	=> __( 'Choose from most used ytas', 'ytas' ),
+			'menu_name'				=> __( 'Tags', 'ytas' ),
+		);
+
+		$args = array(
+			'labels'            => $labels,
+			'public'            => true,
+			'show_in_nav_menus' => true,
+			'show_admin_column' => false,
+			'hierarchical'      => true,
+			'show_tagcloud'     => true,
+			'show_ui'           => true,
+			'query_var'         => 'jce_tag',
+			'rewrite'           => true,
+			'capabilities'      => array(),
+		);
+
+		register_taxonomy( 'jce_tag', array( $this->events_pt ), $args );
 	}
 
 	/**

@@ -52,10 +52,16 @@ class EventsAdmin{
 		global $submenu;
 
 		if(isset($submenu['edit.php?post_type=events'])){
-			$submenu['edit.php?post_type=events'][7] = $submenu['edit.php?post_type=events'][11];
-			$submenu['edit.php?post_type=events'][8] = $submenu['edit.php?post_type=events'][10];
-			unset($submenu['edit.php?post_type=events'][11]);
-			unset($submenu['edit.php?post_type=events'][10]);
+
+			$submenu['edit.php?post_type=events'][7] = $submenu['edit.php?post_type=events'][17];
+			unset($submenu['edit.php?post_type=events'][17]);
+			ksort($submenu['edit.php?post_type=events']);
+			
+			// print_r($submenu['edit.php?post_type=events']);
+			// $submenu['edit.php?post_type=events'][7] = $submenu['edit.php?post_type=events'][11];
+			// $submenu['edit.php?post_type=events'][8] = $submenu['edit.php?post_type=events'][10];
+			// unset($submenu['edit.php?post_type=events'][11]);
+			// unset($submenu['edit.php?post_type=events'][10]);
 		}
 	}
 
@@ -125,6 +131,18 @@ class EventsAdmin{
 			wp_set_object_terms( $post_id, $_event_cals, 'event_cals');
 		}
 
+		// set all day event
+		if(isset($_POST[$this->meta_id]['_event_all_day']) && $_POST[$this->meta_id]['_event_all_day'] == 'yes'){
+			$_POST[$this->meta_id]['_event_start_date_hour'] = 0;
+			$_POST[$this->meta_id]['_event_start_date_minute'] = 0;
+			$_POST[$this->meta_id]['_event_start_date_second'] = 0;
+			$_POST[$this->meta_id]['_event_end_date_hour'] = 23;
+			$_POST[$this->meta_id]['_event_end_date_minute'] = 59;
+			$_POST[$this->meta_id]['_event_end_date_second'] = 59;
+		}else{
+			$_POST[$this->meta_id]['_event_all_day'] = 'no';
+		}
+
 		$start_day = $_POST[$this->meta_id]['_event_start_date_day'];
 		$start_hour = $_POST[$this->meta_id]['_event_start_date_hour'];
 		$start_minute = $_POST[$this->meta_id]['_event_start_date_minute'];
@@ -161,7 +179,7 @@ class EventsAdmin{
 
 	public function add_metabox()
 	{
-		add_meta_box($this->meta_id, esc_html__( 'Event Information'), array($this, 'show_metabox'), 'events', 'normal', 'default');
+		add_meta_box($this->meta_id, esc_html__( 'Events Details'), array($this, 'show_metabox'), 'events', 'normal', 'default');
 	}
 
 	public function admin_columns_head($defaults)
