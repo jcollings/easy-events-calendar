@@ -1,13 +1,13 @@
-#icon-edit.icon32-posts-events { 
+#icon-edit.icon32-posts-event { 
 	background:transparent url('../img/icon-large.png') no-repeat; 
 }     
 
-#adminmenu #menu-posts-events div.wp-menu-image{
+#adminmenu #menu-posts-event div.wp-menu-image{
 	background:transparent url('../img/icon-grey.png') no-repeat center center;
 }
 
-#adminmenu #menu-posts-events:hover div.wp-menu-image,
-#adminmenu #menu-posts-events.wp-has-current-submenu div.wp-menu-image{
+#adminmenu #menu-posts-event:hover div.wp-menu-image,
+#adminmenu #menu-posts-event.wp-has-current-submenu div.wp-menu-image{
 	background:transparent url('../img/icon.png') no-repeat center center;
 }  
 

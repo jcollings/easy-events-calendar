@@ -1,49 +1,20 @@
-<?php 
-class CalendarAdmin{
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
-	/**
-	 * Setup Hooks
-	 * 
-	 * @param [type] &$config [description]
-	 */
-	public function __construct(&$config){
-		$this->config = $config;
+class JCE_Admin_Calendars{
 
-		add_action('init', array($this, 'register_tax'));
+	public function __construct(){
 
 		if(is_admin()){
-			add_action( 'event_cals_add_form_fields', array($this, 'add_new_meta_field'), 10, 2 );
-			add_action( 'event_cals_edit_form_fields', array($this, 'edit_meta_field'), 10, 2 );
-			add_action( 'edited_event_cals', array($this, 'save_custom_meta'), 10, 2 );  
-			add_action( 'create_event_cals', array($this, 'save_custom_meta'), 10, 2 );
+			add_action( 'event_calendar_add_form_fields', array($this, 'add_new_meta_field'), 10, 2 );
+			add_action( 'event_calendar_edit_form_fields', array($this, 'edit_meta_field'), 10, 2 );
+			add_action( 'edited_event_calendar', array($this, 'save_custom_meta'), 10, 2 );  
+			add_action( 'create_event_calendar', array($this, 'save_custom_meta'), 10, 2 );
 			add_action( 'admin_head', array($this, 'hide_slug_box')  );
 			add_action( 'parent_file', array($this, 'menu_highlight'));
 		}
-	}
-	/**
-	 * Register Taxonomoy
-	 * 
-	 * @return void
-	 */
-	function register_tax(){
-		$labels = array(
-		    'name'                => _x( 'Calendars', 'taxonomy general name' ),
-		    'singular_name'       => _x( 'Calendar', 'taxonomy singular name' ),
-		    'search_items'        => __( 'Search Calendars' ),
-		    'all_items'           => __( 'All Calendars' ),
-		    'parent_item'         => __( 'Parent Calendar' ),
-		    'parent_item_colon'   => __( 'Parent Calendar:' ),
-		    'edit_item'           => __( 'Edit Calendar' ), 
-		    'update_item'         => __( 'Update Calendar' ),
-		    'add_new_item'        => __( 'Add New Calendar' ),
-		    'new_item_name'       => __( 'New Calendar Name' ),
-		    'menu_name'           => __( 'Calendar' )
-		); 
-		register_taxonomy( 'event_cals', array($this->config->events_pt), array(
-			'public' => false,
-			'hierarchical' => true,
-			'labels' => $labels,  
-		));	
 	}
 
 	/**
@@ -73,7 +44,7 @@ class CalendarAdmin{
 		$t_id = $term->term_id;
 
 		// retrieve the existing value(s) for this meta field. This returns an array
-		$term_meta = get_option( "event_cals_$t_id" ); ?>
+		$term_meta = get_option( "event_calendar_$t_id" ); ?>
 		<tr class="form-field form-required">
 		<th scope="row" valign="top"><label for="term_meta[calendar_colour]"><?php _e( 'Calendar Colour' ); ?></label></th>
 			<td>
@@ -94,7 +65,7 @@ class CalendarAdmin{
 
 		if ( isset( $_POST['term_meta'] ) ) {
 			$t_id = $term_id;
-			$term_meta = get_option( "event_cals_$t_id" );
+			$term_meta = get_option( "event_calendar_$t_id" );
 			$cat_keys = array_keys( $_POST['term_meta'] );
 			foreach ( $cat_keys as $key ) {
 				if ( isset ( $_POST['term_meta'][$key] ) ) {
@@ -103,7 +74,7 @@ class CalendarAdmin{
 				}
 			}
 			// Save the option array.
-			update_option( "event_cals_$t_id", $term_meta );
+			update_option( "event_calendar_$t_id", $term_meta );
 		}
 	} 
 
@@ -115,7 +86,7 @@ class CalendarAdmin{
 	function hide_slug_box(){
 	    global $pagenow;
 
-	    if(is_admin() && $pagenow == 'edit-tags.php' && isset($_GET['taxonomy']) && $_GET['taxonomy'] == 'event_cals'){
+	    if(is_admin() && $pagenow == 'edit-tags.php' && isset($_GET['taxonomy']) && $_GET['taxonomy'] == 'event_calendar'){
 	        echo "<script type='text/javascript'>
 	            jQuery(document).ready(function($) {
 	                $('#tag-slug, #parent, #tag-description').parent('div').hide();
@@ -137,9 +108,10 @@ class CalendarAdmin{
 	public function menu_highlight($parent_file) {
 		global $current_screen;
 		$taxonomy = $current_screen->taxonomy;
-		if ($taxonomy == 'event_cals')
+		if ($taxonomy == 'event_calendar')
 			$parent_file = 'edit.php?post_type=events';
 		return $parent_file;
 	}
 }
-?>
+
+new JCE_Admin_Calendars();

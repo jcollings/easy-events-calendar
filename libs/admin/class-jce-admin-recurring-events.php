@@ -1,13 +1,14 @@
 <?php 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
 
-class JCE_RecurringEvents{
+class JCE_Admin_RecurringEvents{
 
-	private $config = null;
-	private $meta_id = 'wp-engine-meta-id';
-	private $meta_key = 'wp-engine-meta-key';
+	private $meta_id = 'jcevents';
+	private $meta_key = 'jcevents';
 
-	public function __construct(&$config){
-		$this->config = $config;
+	public function __construct(){
 
 		add_action( 'jce/admin_meta_fields', array( $this, 'show_metabox' ), 10, 2 );
 		add_action('jce/save_event', array( $this, 'save_event'), 10, 1);
@@ -16,8 +17,8 @@ class JCE_RecurringEvents{
 		add_filter( 'jce/setup_upcoming_query', array( $this, 'setup_upcoming_query'), 10 , 1);
 
 		// admin events columns
-		add_filter('manage_events_posts_columns', array($this, 'admin_columns_head'), 15);
-		add_action('manage_events_posts_custom_column', array($this, 'admin_columns_content'), 15); 
+		add_filter('manage_event_posts_columns', array($this, 'admin_columns_head'), 15);
+		add_action('manage_event_posts_custom_column', array($this, 'admin_columns_content'), 15); 
 	}
 
 	public function show_metabox($object, $box){
@@ -184,7 +185,7 @@ class JCE_RecurringEvents{
 		$end_date = "$year-$month-31";
 
 		$query['where'] = "
-		AND ({$wpdb->prefix}posts.post_type  = 'events')
+		AND ({$wpdb->prefix}posts.post_type  = 'event')
 		AND ({$wpdb->prefix}posts.post_status = 'publish')
 		AND 
 		(
@@ -222,7 +223,7 @@ class JCE_RecurringEvents{
 		}
 
 		$query['where'] = "
-		AND ({$wpdb->prefix}posts.post_type  = 'events')
+		AND ({$wpdb->prefix}posts.post_type  = 'event')
 		AND ({$wpdb->prefix}posts.post_status = 'publish')
 		AND 
 		(
@@ -264,14 +265,18 @@ class JCE_RecurringEvents{
 	 * @return void
 	 */
 	public function admin_columns_content( $column ) {
-		global $posts;
+		global $post;
 
 		switch ( $column ) {
 			case 'recurrence':
-				EventsModel::get_recurrence_type();
+				$type = get_post_meta( $post->ID, '_recurrence_type', true );
+				if(!$type){
+					$type = 'None';
+				}
+				echo $type;
 			break;
 		}
 	}
 }
 
-new JCE_RecurringEvents($GLOBALS['jcevents']);
+new JCE_Admin_RecurringEvents();
