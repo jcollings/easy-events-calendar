@@ -129,6 +129,20 @@ $post_event_cals = wp_get_post_terms( $post->ID, 'event_cals');
 foreach($post_event_cals as $e){
 	$temp[] = $e->slug;
 }
+
+// get current event organiser
+$post_organiser = wp_get_post_terms( $post->ID, 'jce_organiser');
+$current_post_organiser = '';
+foreach($post_organiser as $e){
+	$current_post_organiser = $e->slug;
+}
+
+// get current event organiser
+$post_location = wp_get_post_terms( $post->ID, 'jce_venue');
+$current_post_location = '';
+foreach($post_location as $e){
+	$current_post_location = $e->slug;
+}
 ?>
 
 <div class="input radio">
@@ -148,6 +162,17 @@ foreach($post_event_cals as $e){
 do_action( 'jce/admin_meta_fields', $object, $box); ?>
 
 <h2>Event Location</h2>
+<div class="input select">
+	<label>Existing</label>
+	
+	<?php $terms = get_terms( 'jce_venue', array('hide_empty' => false) ); ?>
+	<select name="<?php echo $this->meta_id; ?>[_jce_venue]; ?>" id="">
+		<option value="">Add new Organiser</option>
+		<?php foreach($terms as $term): ?>
+			<option value="<?php echo $term->slug; ?>" <?php selected( $term->slug, $current_post_location, true ); ?>><?php echo $term->name; ?></option>
+		<?php endforeach; ?>
+	</select>
+</div>
 <div class="input text">
 	<label>Venue:</label>
 	<input type="text" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_event_venue]" value="<?php echo $_event_venue; ?>" />
@@ -166,6 +191,16 @@ do_action( 'jce/admin_meta_fields', $object, $box); ?>
 </div>
 
 <h2>Event Organizer</h2>
+<div class="input select">
+	<label>Existing</label>
+	<?php $terms = get_terms( 'jce_organiser', array('hide_empty' => false) ); ?>
+	<select name="<?php echo $this->meta_id; ?>[_jce_organiser]; ?>" id="">
+		<option value="">Add new Organiser</option>
+		<?php foreach($terms as $term): ?>
+			<option value="<?php echo $term->slug; ?>" <?php selected( $term->slug, $current_post_organiser, true ); ?>><?php echo $term->name; ?></option>
+		<?php endforeach; ?>
+	</select>
+</div>
 <div class="input text">
 	<label>Organizer Name:</label>
 	<input type="text" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_organizer_name]" value="<?php echo $_organizer_name; ?>" />

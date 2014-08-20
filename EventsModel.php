@@ -3,7 +3,7 @@
 class EventsModel{
 	
 	static $config;
-	static $keys = array('_event_start_date', '_event_end_date', '_event_venue', '_event_address', '_event_city', '_event_postcode', '_organizer_name', '_organizer_phone', '_organizer_website', '_organizer_email', '_event_price', '_event_all_day' /*,'_recurrence_type', '_recurrence_num', '_recurrence_space', '_recurrence_end', '_event_calendar'*/ );
+	static $keys = array('_event_start_date', '_event_end_date', '_event_all_day' );
 	static $curr_year;
 	static $curr_month;
 	static $event = array();

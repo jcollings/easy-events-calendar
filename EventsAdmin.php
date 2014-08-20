@@ -36,6 +36,17 @@ class EventsAdmin{
 
 		// hide recuring events
 		add_filter('parse_query',array($this, 'hide_recurring_events'));
+
+		// remove metaboxes
+		add_action( 'admin_menu' , array($this, 'jce_remove_meta_boxes') );
+	}
+
+
+	function jce_remove_meta_boxes() {
+		
+		// remove venue and organiser divs
+		remove_meta_box( 'jce_venuediv', 'events', 'side' );
+		remove_meta_box( 'jce_organiserdiv', 'events', 'side' );
 	}
 
 
@@ -141,6 +152,60 @@ class EventsAdmin{
 			$_POST[$this->meta_id]['_event_end_date_second'] = 59;
 		}else{
 			$_POST[$this->meta_id]['_event_all_day'] = 'no';
+		}
+
+		// set event location
+		if(empty($_POST[$this->meta_id]['_jce_venue'])){
+
+			// insert term
+			$term = $_POST[$this->meta_id]['_event_venue'];
+			if(!empty($term)){
+				
+				$venue_term = wp_insert_term( $term, 'jce_venue');
+				$venue_term_id = $venue_term['term_id'];
+				add_option( "jce_venue_{$venue_term_id}", array(
+					'venue_address' => $_POST[$this->meta_id]['_event_address'],
+					'venue_city' => $_POST[$this->meta_id]['_event_city'],
+					'venue_postcode' => $_POST[$this->meta_id]['_event_postcode']
+				));
+			}
+		}else{
+
+			// get existing term
+			$term = get_term_by( 'slug', $_POST[$this->meta_id]['_jce_venue'], 'jce_venue');
+			$venue_term_id = $term->term_id;
+		}
+
+		if(isset($venue_term_id) && intval($venue_term_id) > 0){
+			// todo: add term meta details
+			wp_set_object_terms( $post_id, $venue_term_id, 'jce_venue');	
+		}	
+
+		// set event organiser
+		if(empty($_POST[$this->meta_id]['_jce_organiser'])){
+
+			// insert term
+			$term = $_POST[$this->meta_id]['_organizer_name'];
+			if(!empty($term)){
+				
+				$organiser_term = wp_insert_term( $term, 'jce_organiser');
+				$organiser_term_id = $organiser_term['term_id'];
+				add_option( "jce_organiser_{$organiser_term_id}", array(
+					'organiser_phone' => $_POST[$this->meta_id]['_organizer_phone'],
+					'organiser_website' => $_POST[$this->meta_id]['_organizer_website'],
+					'organiser_email' => $_POST[$this->meta_id]['_organizer_email']
+				));
+			}
+		}else{
+
+			// get existing term
+			$term = get_term_by( 'slug', $_POST[$this->meta_id]['_jce_organiser'], 'jce_organiser');
+			$organiser_term_id = $term->term_id;
+		}
+
+		if(isset($organiser_term_id) && intval($organiser_term_id) > 0){
+			// todo: add term meta details
+			wp_set_object_terms( $post_id, $organiser_term_id, 'jce_organiser');
 		}
 
 		$start_day = $_POST[$this->meta_id]['_event_start_date_day'];

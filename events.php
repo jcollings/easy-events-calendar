@@ -93,6 +93,10 @@ class JCEvents{
 			)
 		);	
 
+		/**
+		 * Register Category Taxonomy
+		 */
+
 		$labels = array(
 			'name'					=> _x( 'Categories', 'Taxonomy plural name', 'ytas' ),
 			'singular_name'			=> _x( 'Category', 'Taxonomy singular name', 'ytas' ),
@@ -124,7 +128,11 @@ class JCEvents{
 		);
 
 		register_taxonomy( 'jce_category', array( $this->events_pt ), $args );	
-
+		
+		/**
+		 * Register Tag Taxonomy
+		 */
+		
 		$labels = array(
 			'name'					=> _x( 'Tags', 'Taxonomy plural name', 'ytas' ),
 			'singular_name'			=> _x( 'Tag', 'Taxonomy singular name', 'ytas' ),
@@ -156,6 +164,78 @@ class JCEvents{
 		);
 
 		register_taxonomy( 'jce_tag', array( $this->events_pt ), $args );
+
+		/**
+		 * Register Venue Taxonomy
+		 */
+		
+		$labels = array(
+			'name'					=> _x( 'Venues', 'Taxonomy plural name', 'ytas' ),
+			'singular_name'			=> _x( 'Venue', 'Taxonomy singular name', 'ytas' ),
+			'search_items'			=> __( 'Search Venues', 'ytas' ),
+			'popular_items'			=> __( 'Popular Venues', 'ytas' ),
+			'all_items'				=> __( 'All Venues', 'ytas' ),
+			'parent_item'			=> __( 'Parent Venue', 'ytas' ),
+			'parent_item_colon'		=> __( 'Parent Venue', 'ytas' ),
+			'edit_item'				=> __( 'Edit Venue', 'ytas' ),
+			'update_item'			=> __( 'Update Venue', 'ytas' ),
+			'add_new_item'			=> __( 'Add New Venue', 'ytas' ),
+			'new_item_name'			=> __( 'New Venue Name', 'ytas' ),
+			'add_or_remove_items'	=> __( 'Add or remove Venues', 'ytas' ),
+			'choose_from_most_used'	=> __( 'Choose from most used ytas', 'ytas' ),
+			'menu_name'				=> __( 'Venues', 'ytas' ),
+		);
+
+		$args = array(
+			'labels'            => $labels,
+			'public'            => true,
+			'show_in_nav_menus' => true,
+			'show_admin_column' => false,
+			'hierarchical'      => true,
+			'show_tagcloud'     => true,
+			'show_ui'           => true,
+			'query_var'         => 'jce_venue',
+			'rewrite'           => true,
+			'capabilities'      => array(),
+		);
+
+		register_taxonomy( 'jce_venue', array( $this->events_pt ), $args );
+
+		/**
+		 * Register Organiser Taxonomy
+		 */
+
+		$labels = array(
+			'name'					=> _x( 'Organisers', 'Taxonomy plural name', 'ytas' ),
+			'singular_name'			=> _x( 'Organiser', 'Taxonomy singular name', 'ytas' ),
+			'search_items'			=> __( 'Search Organisers', 'ytas' ),
+			'popular_items'			=> __( 'Popular Organisers', 'ytas' ),
+			'all_items'				=> __( 'All Organisers', 'ytas' ),
+			'parent_item'			=> __( 'Parent Organiser', 'ytas' ),
+			'parent_item_colon'		=> __( 'Parent Organiser', 'ytas' ),
+			'edit_item'				=> __( 'Edit Organiser', 'ytas' ),
+			'update_item'			=> __( 'Update Organiser', 'ytas' ),
+			'add_new_item'			=> __( 'Add New Organiser', 'ytas' ),
+			'new_item_name'			=> __( 'New Organiser Name', 'ytas' ),
+			'add_or_remove_items'	=> __( 'Add or remove Organisers', 'ytas' ),
+			'choose_from_most_used'	=> __( 'Choose from most used ytas', 'ytas' ),
+			'menu_name'				=> __( 'Organisers', 'ytas' ),
+		);
+
+		$args = array(
+			'labels'            => $labels,
+			'public'            => true,
+			'show_in_nav_menus' => true,
+			'show_admin_column' => false,
+			'hierarchical'      => true,
+			'show_tagcloud'     => true,
+			'show_ui'           => true,
+			'query_var'         => 'jce_organiser',
+			'rewrite'           => true,
+			'capabilities'      => array(),
+		);
+
+		register_taxonomy( 'jce_organiser', array( $this->events_pt ), $args );
 	}
 
 	/**
