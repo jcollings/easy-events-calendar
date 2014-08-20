@@ -21,7 +21,7 @@ class EventsAdmin{
 
 		//pages
 		add_action( 'admin_menu', array( $this, 'register_menu_pages' ) );
-		add_action( 'admin_menu', array($this, 'add_user_menu_notifications'));
+		// add_action( 'admin_menu', array($this, 'add_user_menu_notifications'));
 
 		// admin index
 		add_filter('manage_events_posts_columns', array($this, 'admin_columns_head'));  
@@ -58,7 +58,7 @@ class EventsAdmin{
 	    }
 	}
 
-	public function add_user_menu_notifications() {
+	/*public function add_user_menu_notifications() {
 		global $menu;
 		global $submenu;
 
@@ -74,7 +74,7 @@ class EventsAdmin{
 			// unset($submenu['edit.php?post_type=events'][11]);
 			// unset($submenu['edit.php?post_type=events'][10]);
 		}
-	}
+	}*/
 
 	public function register_menu_pages(){
 		add_submenu_page( 'edit.php?post_type=events', 'Calendars', 'Calendars', 'add_users', 'calendar', array($this, 'show_cal'));

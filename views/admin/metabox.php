@@ -167,7 +167,7 @@ do_action( 'jce/admin_meta_fields', $object, $box); ?>
 	
 	<?php $terms = get_terms( 'jce_venue', array('hide_empty' => false) ); ?>
 	<select name="<?php echo $this->meta_id; ?>[_jce_venue]; ?>" id="">
-		<option value="">Add new Organiser</option>
+		<option value="">Add new Venue</option>
 		<?php foreach($terms as $term): ?>
 			<option value="<?php echo $term->slug; ?>" <?php selected( $term->slug, $current_post_location, true ); ?>><?php echo $term->name; ?></option>
 		<?php endforeach; ?>
