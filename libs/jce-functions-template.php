@@ -83,3 +83,28 @@ function jce_event_organiser_meta($key = 'name', $echo = true){
 	
 	echo $result;
 }
+
+function jce_pagination($total_posts = false, $posts_per_page = false){
+
+	if(!$total_posts){
+		global $wp_query;
+		$total_posts = $wp_query->found_posts;
+		$posts_per_page = $wp_query->query_vars['posts_per_page'];
+	}
+
+	$current = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1;
+
+	if($total_posts > $posts_per_page){
+
+		// time for some pagination
+		$page_count = ceil($total_posts / $posts_per_page);
+		for($x = 1; $x <= $page_count; $x++){
+
+			if($x == $current){
+				echo '<span>'.$x.'</span>';
+			}else{
+				echo '<a href="'.add_query_arg('paged', $x).'">'.$x.'</a>';
+			}
+		}
+	}
+}

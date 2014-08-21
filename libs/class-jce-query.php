@@ -6,9 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 class JCE_Query{
 
 	public function __construct(){
-
-		add_action( 'pre_get_posts', array($this, 'pre_get_posts'), 0);
-		add_action('the_post', array($this, 'the_post'));
+		if(!is_admin()){
+			add_action( 'pre_get_posts', array($this, 'pre_get_posts'), 0);
+			add_action('the_post', array($this, 'the_post'));
+		}
 	}
 
 	public function pre_get_posts($query){

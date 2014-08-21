@@ -8,6 +8,8 @@ get_header(); ?>
 		<?php jce_get_template_part('content-event'); ?>
 		
 	<?php endwhile; ?>
+
+	<?php jce_pagination(); ?>
 	
 <?php endif; ?>
 
