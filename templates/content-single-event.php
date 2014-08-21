@@ -1,5 +1,12 @@
 <h1><?php the_title(); ?></h1>
 
+<hr />
+
+Start: <?php jce_event_start_date('jS F Y g:i a'); ?><br />
+End: <?php jce_event_end_date('jS F Y g:i a'); ?>
+
+<hr />
+
 <?php the_content(); ?>
 <hr />
 
@@ -12,6 +19,3 @@ Organiser: <?php jce_event_organiser_meta(); ?><br />
 Phone: <?php jce_event_organiser_meta('phone'); ?><br />
 Email: <?php jce_event_organiser_meta('email'); ?><br />
 Website: <?php jce_event_organiser_meta('website'); ?>
-<hr />
-
-<?php var_dump(JCE()->event->get_post_meta()); ?>

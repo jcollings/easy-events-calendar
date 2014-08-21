@@ -5,7 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class JCE_Query{
 
+	private $cal_month = null;
+	private $cal_year = null;
+
 	public function __construct(){
+
+		$this->cal_month = date('m');
+		$this->cal_year = date('Y');
+
 		if(!is_admin()){
 			add_action( 'pre_get_posts', array($this, 'pre_get_posts'), 0);
 			add_action('the_post', array($this, 'the_post'));
@@ -17,8 +24,37 @@ class JCE_Query{
 		if($query->is_main_query() && $query->is_post_type_archive( 'event' )){
 
 			// calendar or upcoming view
-			add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
+			$view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
+			if($view == 'calendar'){
+				add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+			}else{
+				add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
+			}
 		}
+	}
+
+	public function get_events($args = array()){
+		add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
+		return new WP_Query(array(
+			'post_type' => 'event',
+			'posts_per_page' => 5
+		));
+	}
+
+	public function get_calendar($month = null, $year = null, $args = array()){
+
+		if(!empty($month)){
+			$this->cal_month = $month;
+		}
+		
+		if(!empty($year)){
+			$this->cal_year = $year;
+		}
+
+		add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+		return new WP_Query(array(
+			'post_type' => 'event'
+		));
 	}
 
 	public function setup_upcoming_query($query){
@@ -57,6 +93,50 @@ class JCE_Query{
 		return $query;
 	}
 
+	public function setup_month_query($query){
+
+		global $wpdb;
+
+		$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : $this->cal_year;
+		$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : $this->cal_month;
+
+		$start_date = "$year-$month-01";
+		$end_date = "$year-$month-31";
+
+		$query['where'] = "
+		AND ({$wpdb->prefix}posts.post_type  = 'event')
+		AND ({$wpdb->prefix}posts.post_status = 'publish')
+		AND mt3.meta_key = '_event_length'
+		AND 
+		(
+			(
+				{$wpdb->prefix}postmeta.meta_key = '_event_start_date' 
+				AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) >= '$start_date' 
+				AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) <= '$end_date' 
+			)
+			OR
+			(
+				{$wpdb->prefix}postmeta.meta_key = '_event_start_date' 
+				AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) >= '$start_date' 
+				AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) <= '$end_date' 
+			)
+		)";
+
+		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";
+		$query['orderby'] = "{$wpdb->prefix}postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN {$wpdb->prefix}postmeta ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt1 ON ({$wpdb->prefix}posts.ID = mt1.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt2 ON ({$wpdb->prefix}posts.ID = mt2.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt3 ON ({$wpdb->prefix}posts.ID = mt3.post_id)";
+		$query['fields'] = "{$wpdb->prefix}postmeta.meta_value AS start_date, DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, {$wpdb->prefix}posts.*";
+		$query['limits'] = "";
+
+		$query = apply_filters( 'jce/setup_month_query', $query, $month, $year);
+		remove_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+
+		return $query;
+	}
+
 	/**
 	 * Setup current event in loop
 	 * 
@@ -79,13 +159,13 @@ class JCE_Query{
 					$date = null;
 				}
 
-				JCE()->event = new JC_Event($post, $date);
+				JCE()->event = new JCE_Event($post, $date);
 
 			}else{
-				JCE()->event = new JC_Event($post);
+				JCE()->event = new JCE_Event($post);
 			}			
 		}
 	}
 }
 
-new JCE_Query();
+return new JCE_Query();

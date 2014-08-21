@@ -18,6 +18,8 @@ class JCEvents2 {
 	public $plugin_dir = false;
 	public $plugin_url = false;
 	public $event = null;
+	public $query = null;
+	public $default_view = 'calendar';
 
 	/**
 	 * Single instance of class
@@ -39,6 +41,8 @@ class JCEvents2 {
 		// include required files
 		$this->includes();
 
+		add_action( 'query_vars' , array( $this, 'register_query_vars' ) );
+
 		do_action( 'jcevents_loaded' );
 	}
 
@@ -47,8 +51,9 @@ class JCEvents2 {
 		// core includes
 		include_once 'libs/class-jce-post-types.php';
 		include_once 'libs/class-jce-event.php';
+		include_once 'libs/class-jce-calendar.php';
 		include_once 'libs/class-jce-templates.php';
-		include_once 'libs/class-jce-query.php';
+		$this->query = include_once 'libs/class-jce-query.php';
 
 		// admin includes
 		include_once 'libs/admin/class-jce-admin-venues.php';
@@ -60,6 +65,15 @@ class JCEvents2 {
 		// functions
 		include_once 'libs/jce-functions-general.php';
 		include_once 'libs/jce-functions-template.php';
+	}
+
+	public function register_query_vars($public_query_vars ){
+        $public_query_vars[] = 'event_year';
+        $public_query_vars[] = 'event_month';
+        $public_query_vars[] = 'event_day';
+        $public_query_vars[] = 'cal_month';
+        $public_query_vars[] = 'cal_year';
+        return $public_query_vars;
 	}
 }
 

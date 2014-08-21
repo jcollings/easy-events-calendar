@@ -14,7 +14,80 @@ class JCE_Admin_Calendars{
 			add_action( 'create_event_calendar', array($this, 'save_custom_meta'), 10, 2 );
 			add_action( 'admin_head', array($this, 'hide_slug_box')  );
 			add_action( 'parent_file', array($this, 'menu_highlight'));
+			add_action( 'admin_menu', array( $this, 'register_menu_pages' ) );
 		}
+	}
+
+	public function register_menu_pages(){
+		add_submenu_page( 'edit.php?post_type=event', 'Calendars', 'Calendars', 'add_users', 'calendar', array($this, 'admin_calendar_page'));
+	}
+
+	public function admin_calendar_page(){
+		/**
+		 * Add new Calendar
+		 */
+		if(isset($_POST['action'])){
+		    switch($_POST['action']){
+		        case 'manage_calendars':
+		            $cal_name = isset($_POST['cal_name']) && !empty($_POST['cal_name']) ? $_POST['cal_name'] : $_POST['cal_name'];
+		            wp_insert_term( $cal_name, 'event_calendar');
+		        break;
+		    }
+		    
+		}
+		?>
+		<div class="wrap">
+		    <div id="icon-edit" class="icon32 icon32-posts-events"><br></div>
+			<h2>Events Calendars</h2>
+
+		    <div id="poststuff" class="simple_events">
+		        <div id="post-body" class="metabox-holder columns-2">
+		            <div id="post-body-content">
+		                <?php
+		                $cal = new JCE_Calendar();
+		                
+		                $year = isset($_GET['cal_year']) ? $_GET['cal_year'] : date('Y');
+						$month = isset($_GET['cal_month']) ? $_GET['cal_month'] : date('m');
+
+		                $cal->prev_year_link = false;
+		                $cal->next_year_link = false;
+		                $cal->set_week_start('Mon');
+		                $cal->set_month($year,$month);
+		                $events = JCE()->query->get_calendar($month, $year);
+		                echo $cal->render($events->posts);
+		                ?>
+		            </div>
+
+		            <div id="postbox-container-1" class="postbox-container" style="margin-top:42px;">
+		                <div id="postimagediv" class="postbox ">
+		                    <h3 class="hndle"><span>Calendars</span> - <a href="edit-tags.php?taxonomy=event_calendar">Manage</a></h3>
+		                    <div class="inside">
+		                        <form method="post">
+		                            <input type="hidden" name="action" value="manage_calendars">
+		                            <div id="category-all">
+		                            <?php 
+		                            $calendars = get_terms( 'event_calendar', array('hide_empty' => false));
+		                            foreach($calendars as $calendar){
+		                                ?>
+		                                <div class="input checkbox">
+		                                    <input type="checkbox" name="<?php echo $calendar->slug; ?>" value="1" checked="checked" />
+		                                    <label><?php echo $calendar->name; ?></label>
+		                                </div>
+		                                <?php
+		                            }
+		                            ?>
+		                            </div>
+		                            <label>Add Calendar: </label>
+		                            <input type="text" name="cal_name" />
+		                        </form>
+		                    </div>
+		                </div><!-- /#postimagediv -->
+		            </div>
+		        </div>
+		    </div>
+
+		</div>
+		<?php
 	}
 
 	/**

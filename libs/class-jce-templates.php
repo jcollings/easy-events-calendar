@@ -19,13 +19,28 @@ class JCE_Templates{
 	public function template_include($template = ''){
 
 		if(is_post_type_archive( 'event' )){
-			
-			// load event archive template
-			$located = JCE()->plugin_dir . 'templates/archive-event.php';
-			$template_file = get_stylesheet_directory() . '/jcevents/archive-event.php';
-			if(is_file($template_file)){
-				$located = $template_file;
+
+			// calendar or upcoming view
+			$view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
+			if($view == 'calendar'){
+				
+				// load event calendar template
+				$located = JCE()->plugin_dir . 'templates/archive-event-cal.php';
+				$template_file = get_stylesheet_directory() . '/jcevents/archive-event-cal.php';
+				if(is_file($template_file)){
+					$located = $template_file;
+				}
+			}else{
+
+				// load event archive template
+				$located = JCE()->plugin_dir . 'templates/archive-event.php';
+				$template_file = get_stylesheet_directory() . '/jcevents/archive-event.php';
+				if(is_file($template_file)){
+					$located = $template_file;
+				}
 			}
+
+			
 			return $located;
 
 		}elseif(is_single() && get_post_type() == 'event'){
@@ -52,10 +67,11 @@ class JCE_Templates{
 
 		if(is_singular( 'event' )){
 
-			if(isset($_GET['ed']) && isset($_GET['em']) && isset($_GET['ey'])){
-				$day = $_GET['ed'];
-				$month = $_GET['em'];
-				$year = $_GET['ey'];
+			$day = get_query_var('event_day');
+			$month = get_query_var('event_month');
+			$year = get_query_var('event_year');
+			
+			if($day && $month && $year){
 				$date = sprintf("%d-%d-%d", $year, $month, $day);
 				$temp_date = date('Y-m-d', strtotime($date));
 

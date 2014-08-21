@@ -21,11 +21,34 @@ function jce_post_link($post_link, $post, $leavename){
 		
 		$meta = JCE()->event->get_post_meta();
 		if(isset($meta['_event_start_date'])){
-			return add_query_arg(array('ed' => date('d', strtotime($meta['_event_start_date'])), 'em' => date('m', strtotime($meta['_event_start_date'])), 'ey' => date('Y', strtotime($meta['_event_start_date']))), $post_link);	
+			return add_query_arg(array('event_day' => date('d', strtotime($meta['_event_start_date'])), 'event_month' => date('m', strtotime($meta['_event_start_date'])), 'event_year' => date('Y', strtotime($meta['_event_start_date']))), $post_link);	
 		}
 	}
 
 	return $post_link;
+}
+
+function jce_get_permalink($args = array()){
+
+	if(isset($args['id'])){
+		$id = $args['id'];
+	}else{
+		return false;
+	}
+
+	if(isset($args['date'])){
+		$year = date('Y', strtotime($args['date']));
+		$month = date('m', strtotime($args['date']));
+		$day = date('d', strtotime($args['date']));
+	}elseif( isset($args['d']) && isset($args['m']) && isset($args['y'])){
+		$year = $args['y'];
+		$month = $args['m'];
+		$day = $args['d'];
+	}else{
+		return false;
+	}
+
+	return add_query_arg(array('event_day' => $day, 'event_month' => $month, 'event_year' => $year), get_permalink($id));
 }
 
 function jce_event_venue_meta($key = 'name', $echo = true){
@@ -107,4 +130,30 @@ function jce_pagination($total_posts = false, $posts_per_page = false){
 			}
 		}
 	}
+}
+
+function jce_event_start_date($format = 'd/m/Y', $echo = true){
+
+	$event = JCE()->event->get_post_meta();
+	$date = $event['_event_start_date'];
+	$time = strtotime($date);
+	$output = date($format, $time);
+
+	if(!$echo)
+		return $output;
+
+	echo $output;
+}
+
+function jce_event_end_date($format = 'd/m/Y', $echo = true){
+
+	$event = JCE()->event->get_post_meta();
+	$date = $event['_event_end_date'];
+	$time = strtotime($date);
+	$output = date($format, $time);
+
+	if(!$echo)
+		return $output;
+
+	echo $output;
 }

@@ -173,44 +173,33 @@ class JCE_Admin_RecurringEvents{
 
 		global $wpdb;
 
-		if(intval($month) == 0){
-			$month = date('m');
-		}
-
-		if(intval($year) == 0){
-			$year =  date('Y');
-		}
-
 		$start_date = "$year-$month-01";
 		$end_date = "$year-$month-31";
 
 		$query['where'] = "
-		AND ({$wpdb->prefix}posts.post_type  = 'event')
-		AND ({$wpdb->prefix}posts.post_status = 'publish')
+		AND ({$wpdb->prefix}posts.post_type = 'event') 
+		AND ({$wpdb->prefix}posts.post_status = 'publish') 
 		AND 
-		(
-			(
-				{$wpdb->prefix}postmeta.meta_key = '_revent_start_date'
-				AND mt3.meta_key = '_event_length'
-				AND  (mt1.meta_key = '_revent_start_date' AND CAST(mt1.meta_value AS DATE) >= '$start_date')
-				AND  (mt2.meta_key = '_revent_start_date' AND CAST(mt2.meta_value AS DATE) <= '$end_date') 
-			)
+		( 
+			( 
+			{$wpdb->prefix}postmeta.meta_key = '_revent_start_date' 
+			AND mt3.meta_key = '_event_length'
+			AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) >= '$start_date' 
+			AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) <= '$end_date' 
+			) 
 			OR
-			(
-				{$wpdb->prefix}postmeta.meta_key = '_revent_start_date'
-				AND (mt1.meta_key = '_revent_start_date' AND mt3.meta_key = '_event_length' AND CAST(DATE_ADD(mt1.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date')
-				AND (mt1.meta_key = '_revent_start_date' AND mt3.meta_key = '_event_length' AND CAST(DATE_ADD(mt1.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date')
-			)
+		 	( 
+			{$wpdb->prefix}postmeta.meta_key = '_revent_start_date' 
+			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date') 
+			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date') 
+			) 
 		)";
 
 		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";
 		$query['orderby'] = "{$wpdb->prefix}postmeta.meta_value ASC";
 		$query['join'] = "INNER JOIN {$wpdb->prefix}postmeta ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id)
-		INNER JOIN {$wpdb->prefix}postmeta AS mt1 ON ({$wpdb->prefix}posts.ID = mt1.post_id)
-		INNER JOIN {$wpdb->prefix}postmeta AS mt2 ON ({$wpdb->prefix}posts.ID = mt2.post_id)
 		INNER JOIN {$wpdb->prefix}postmeta AS mt3 ON ({$wpdb->prefix}posts.ID = mt3.post_id)";
 		$query['fields'] = "{$wpdb->prefix}postmeta.meta_value AS start_date, DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, {$wpdb->prefix}posts.*";
-
 		return $query;
 	}
 

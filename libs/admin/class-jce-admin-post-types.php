@@ -16,6 +16,10 @@ class JCE_Admin_PostTypes{
 			add_action( 'load-post-new.php', array($this, 'setup_metabox' ));
 			add_action( 'save_post', array($this, 'save_metabox'), 10, 2 );
 			add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue_scripts' ));
+
+			// admin events columns
+			add_filter('manage_event_posts_columns', array($this, 'admin_columns_head'), 5);
+			add_action('manage_event_posts_custom_column', array($this, 'admin_columns_content'), 5); 
 		}
 	}
 
@@ -43,7 +47,7 @@ class JCE_Admin_PostTypes{
 	public function show_metabox($object, $box){
 		wp_nonce_field( basename( __FILE__ ), $this->meta_key.'_nonce' );
 
-		$event = new JC_Event($object);
+		$event = new JCE_Event($object);
 		$meta = $event->get_post_meta();
 		extract($meta);
 
@@ -305,7 +309,7 @@ class JCE_Admin_PostTypes{
 			foreach($_POST[$this->meta_id]['_event_calendar'] as $cal){
 				$_event_cals[] = $cal;
 			}
-			wp_set_object_terms( $post_id, $_event_cals, 'event_cals');
+			wp_set_object_terms( $post_id, $_event_cals, 'event_calendar');
 		}
 
 		// set all day event
@@ -405,6 +409,41 @@ class JCE_Admin_PostTypes{
 
 		do_action('jce/save_event', $post_id);
 
+	}
+
+	/**
+	 * Add admin columns
+	 * @param  array $defaults 
+	 * @return array
+	 */
+	public function admin_columns_head($defaults)
+	{
+		$defaults['event_start'] = 'Start Date';
+		$defaults['event_end'] = 'End Date';
+	    return $defaults;
+	}
+
+	/**
+	 * Display column contents
+	 * @param  string $column 
+	 * @return void
+	 */
+	public function admin_columns_content( $column ) {
+		global $post;
+
+		$event = JCE()->event;
+		if(!$event){
+			JCE()->event = new JCE_Event($post);
+		}
+
+		switch ( $column ) {
+			case 'event_start':
+				jce_event_start_date('jS F Y g:i a');
+			break;
+			case 'event_end':
+				jce_event_end_date('jS F Y g:i a');
+			break;
+		}
 	}
 }
 

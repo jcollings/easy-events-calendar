@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-class JC_Event{
+class JCE_Event{
 
 	private $id = null;
 
