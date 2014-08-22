@@ -1,28 +1,22 @@
 <?php
-
-$current_month = false;
-
 get_header(); ?>
+
+<?php do_action( 'jce/before_event_archive' ); ?>
 
 <?php if(have_posts()): ?>
 
-	<?php while(have_posts()): the_post(); ?>
+	<?php do_action( 'jce/before_event_loop' ); ?>
 
-		<?php
-		// display month name in archive
-		$month = jce_event_start_date('M', false);
-		if($current_month != $month){
-			$current_month = $month;
-			echo sprintf("<h2 class=\"month-title\">%s</h2>", $current_month);
-		}
-		?>
+	<?php while(have_posts()): the_post(); ?>
 
 		<?php jce_get_template_part('content-event'); ?>
 		
 	<?php endwhile; ?>
 
-	<?php jce_pagination(); ?>
+	<?php do_action( 'jce/after_event_loop' ); ?>
 	
 <?php endif; ?>
+
+<?php do_action( 'jce/after_event_archive' ); ?>
 
 <?php get_footer(); ?>

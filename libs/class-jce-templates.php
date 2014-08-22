@@ -9,6 +9,14 @@ class JCE_Templates{
 
 		add_filter( 'template_include', array($this, 'template_include') );
 		add_action( 'template_redirect', array($this, 'template_redirect'));
+		add_action( 'wp_enqueue_scripts', array($this, 'enqueue_scripts' ));
+	}
+
+	public function enqueue_scripts(){
+		if(JCE()->disable_css || is_admin())
+			return;
+
+		wp_enqueue_style('jce-skeleton', JCE()->plugin_url . 'assets/css/skeleton.css');
 	}
 
 	/**

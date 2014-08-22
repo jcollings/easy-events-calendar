@@ -1,22 +1,21 @@
-<article>
+<?php do_action( 'jce/before_event_content' ); ?>
 
-	<header>
-		<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-		<div class="event-meta">
-		<p>From: <?php jce_event_start_date('jS F Y g:i a'); ?> - <?php jce_event_end_date('jS F Y g:i a'); ?></p>
-		</div>
+<article class="jce-event">
+
+	<header class="jce-event-header">
+		<?php do_action( 'jce/event_header' ); ?>
 	</header>
 
-	<div class="event-content">
+	<div class="jce-event-content">
 		<?php the_excerpt(); ?>
 	</div>
 
-	<footer>
-		<div class="event-meta">
-			<?php var_dump(JCE()->event->get_post_meta()); ?>
+	<footer class="jce-event-footer">
+		<div class="jce-event-meta">
+			<?php // var_dump(JCE()->event->get_post_meta()); ?>
 		</div>
 	</footer>
 
-	<hr />
-
 </article>
+
+<?php do_action( 'jce/after_event_content' ); ?>

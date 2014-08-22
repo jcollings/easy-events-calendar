@@ -1,0 +1,59 @@
+.jce-event-archive .jce-event{
+	border: 2px solid #333;
+	padding:5px 10px;
+	margin:0 0 10px;
+}
+
+.jce-event .jce-event-title, .jce-event-archive .jce-event p{
+	margin:0;
+	padding:0;
+}
+
+.jce-archive-title{
+	border-bottom: 2px solid #333;
+	margin: 0 0 10px;
+	padding: 5px 10px;
+}
+
+.jce-pagination{
+	margin-top: 25px;
+}
+
+.jce-pagination a{
+	background: #333;
+	color: #FFF;
+}
+
+.jce-pagination a:hover{
+	background: #666;
+}
+
+.jce-pagination a, .jce-pagination span{
+	padding: 3px 7px;
+	border: 1px solid #FFF;
+}
+
+
+.jce-event-header{
+
+}
+
+.jce-event-title{
+
+}
+
+.jce-event-meta{
+
+}
+
+.jce-event-content{
+
+}
+
+.jce-event-footer{
+
+}
+
+.jce-event-meta{
+
+}

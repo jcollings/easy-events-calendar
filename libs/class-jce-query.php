@@ -27,6 +27,12 @@ class JCE_Query{
 			$view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
 			if($view == 'calendar'){
 				add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
+			}elseif($view == 'archive'){
+				remove_action( 'jce/before_event_content', 'jce_add_archive_month');
+				add_action('jce/before_event_archive', 'output_archive_heading');
+				add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
 			}else{
 				add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
 			}
@@ -35,10 +41,21 @@ class JCE_Query{
 
 	public function get_events($args = array()){
 		add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
-		return new WP_Query(array(
+		
+		$query_args = array(
 			'post_type' => 'event',
 			'posts_per_page' => 5
-		));
+		);
+
+		if(isset($args['posts_per_page'])){
+			$query_args['posts_per_page'] = $args['posts_per_page'];
+		}
+
+		if(isset($args['paged'])){
+			$query_args['paged'] = $args['paged'];
+		}
+
+		return new WP_Query($query_args);
 	}
 
 	public function get_calendar($month = null, $year = null, $args = array()){

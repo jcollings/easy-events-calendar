@@ -19,7 +19,8 @@ class JCEvents2 {
 	public $plugin_url = false;
 	public $event = null;
 	public $query = null;
-	public $default_view = 'calendar';
+	public $default_view = 'archive';
+	public $disable_css = false;
 
 	/**
 	 * Single instance of class
@@ -61,6 +62,10 @@ class JCEvents2 {
 		include_once 'libs/admin/class-jce-admin-calendars.php';
 		include_once 'libs/admin/class-jce-admin-post-types.php';
 		include_once 'libs/admin/class-jce-admin-recurring-events.php';
+
+		// shortcodes
+		include_once 'libs/shortcodes/class-jce-shortcode-archive.php';
+		include_once 'libs/shortcodes/class-jce-shortcode-calendar.php';
 
 		// functions
 		include_once 'libs/jce-functions-general.php';
