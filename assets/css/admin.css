@@ -80,59 +80,29 @@ fieldset#recurrence_fields{
 }
 
 /**
- * Admin Calendar Styles
+ * Admin Calendar
  */
-
-.event-list a{
-	color:#FFF;
-	text-decoration: none;
-}
-
 .cal{
-	width:100%;
+	border: 1px solid rgb(229, 229, 229);
+	border-image-source: initial;
+	border-image-slice: initial;
+	border-image-width: initial;
+	border-image-outset: initial;
+	border-image-repeat: initial;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.0392157) 0px 1px 1px;
+	box-shadow: rgba(0, 0, 0, 0.0392157) 0px 1px 1px;
+	background: rgb(255, 255, 255);
 }
+
 .cal-nav{
-	width:100%;
+	font-size: 14px;
+	padding: 8px 12px;
+	margin: 0;
+	line-height: 1.4;
 	text-align: center;
-}
-.cal-nav a, .cal-nav span{
-	margin:0 2px;
-}
-
-.prev-next .date{
-	color:#DDD;
-}
-
-.cal-weekdays, .cal-days-row{
-	width:100%;
-	overflow: hidden;
-}
-
-.cal-weekday-item, .cal-day{
-	width:14.28%;
-	float:left;
+	border-bottom: 1px solid #eee;
 }
 
 .cal-weekday-item{
-	font-weight: bold;
-	padding:5px 0;
-}
-
-.cal-day .cal-day-wrapper{
-	height:100px;
-	border:1px solid #EEE;
-	display: block;
-	padding:5px;
-}
-
-.cal-day-wrapper li{
-	background: red;
-	color:#FFF;
-	padding:1px;
-	text-indent: 5px;
-	font-size: 10px;
-}
-
-.wp-admin.post-type-events .postbox h2{
-	border-bottom: 1px solid #EFEFEF;
+	text-align: center;
 }

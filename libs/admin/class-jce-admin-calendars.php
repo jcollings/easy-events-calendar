@@ -38,7 +38,7 @@ class JCE_Admin_Calendars{
 		?>
 		<div class="wrap">
 		    <div id="icon-edit" class="icon32 icon32-posts-events"><br></div>
-			<h2>Events Calendars</h2>
+			<h2>Events Calendar</h2>
 
 		    <div id="poststuff" class="simple_events">
 		        <div id="post-body" class="metabox-holder columns-2">
@@ -58,7 +58,7 @@ class JCE_Admin_Calendars{
 		                ?>
 		            </div>
 
-		            <div id="postbox-container-1" class="postbox-container" style="margin-top:42px;">
+		            <div id="postbox-container-1" class="postbox-container">
 		                <div id="postimagediv" class="postbox ">
 		                    <h3 class="hndle"><span>Calendars</span> - <a href="edit-tags.php?taxonomy=event_calendar">Manage</a></h3>
 		                    <div class="inside">
