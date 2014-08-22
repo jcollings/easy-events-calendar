@@ -190,8 +190,8 @@ class JCE_Admin_RecurringEvents{
 			OR
 		 	( 
 			{$wpdb->prefix}postmeta.meta_key = '_revent_start_date' 
-			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date') 
-			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD(wp_postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date') 
+			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date') 
+			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date') 
 			) 
 		)";
 
