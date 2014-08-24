@@ -11,13 +11,13 @@ class JCE_Calendar{
 	var $month;
 	var $week_start = 0;
 	var $headings = array(
-		'Mon' => 'Monday', 
-		'Tue' => 'Tuesday', 
-		'Wed' => 'Wednesday', 
-		'Thu' => 'Thursday', 
-		'Fri' => 'Friday', 
-		'Sat' => 'Saturday', 
-		'Sun' => 'Sunday'
+		'Mon' => 'Mon', 
+		'Tue' => 'Tue', 
+		'Wed' => 'Wed', 
+		'Thu' => 'Thu', 
+		'Fri' => 'Fri', 
+		'Sat' => 'Sat', 
+		'Sun' => 'Sun'
 	);
 	var $months = array('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december');
 	var $cal_tiles = array();
@@ -167,7 +167,7 @@ class JCE_Calendar{
 							'end' => $end,
 							'thumb' => $thumb[0],
 							'bg' => $main[0],
-							'link' => eec_get_permalink(array('id' => $event->ID, 'date' => $event->start_date))
+							'link' => jce_get_permalink(array('id' => $event->ID, 'date' => $event->start_date))
 						);
 						if(!isset($temp['tiles'][$i])){
 							$temp['tiles'][$i] = $thumb[0];
@@ -187,22 +187,23 @@ class JCE_Calendar{
 
 		if($wp_rewrite->permalink_structure){
 
+			// todo: match chosen permalink structure
 			// generate cal links
 			if($this->month == 1){
-				$prev_year_link = home_url('events/'.($this->year-1) . '/'.$this->month.'/'); // add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year-1));
-				$next_year_link = home_url('events/'.($this->year+1) . '/'.$this->month .'/'); // add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year+1));
-				$prev_month_link = home_url('events/'.($this->year-1) . '/12/'); //add_query_arg(array('cal_month' => 12, 'cal_year' => $this->year -1));
-				$next_month_link = home_url('events/'.$this->year . '/'. ($this->month+1) .'/');// add_query_arg(array('cal_month' => $this->month+1, 'cal_year' => $this->year));
+				$prev_year_link = add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year-1));
+				$next_year_link = add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year+1));
+				$prev_month_link = add_query_arg(array('cal_month' => 12, 'cal_year' => $this->year -1));
+				$next_month_link = add_query_arg(array('cal_month' => $this->month+1, 'cal_year' => $this->year));
 			}elseif($this->month == 12){
-				$prev_year_link = home_url('events/' . ($this->year-1) . '/' . ($this->month) . '/'); //add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year-1));
-				$next_year_link = home_url('events/' . ($this->year+1) . '/' . ($this->month) . '/');//add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year+1));
-				$prev_month_link = home_url('events/' . ($this->year-1) . '/' . ($this->month-1) . '/');//add_query_arg(array('cal_month' => $this->month-1, 'cal_year' => $this->year));
-				$next_month_link = home_url('events/' . ($this->year+1) . '/' . (1) . '/');//add_query_arg(array('cal_month' => 1, 'cal_year' => $this->year+1));
+				$prev_year_link = add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year-1));
+				$next_year_link = add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year+1));
+				$prev_month_link = add_query_arg(array('cal_month' => $this->month-1, 'cal_year' => $this->year));
+				$next_month_link = add_query_arg(array('cal_month' => 1, 'cal_year' => $this->year+1));
 			}else{
-				$prev_year_link = home_url('events/' . ($this->year-1) . '/' . ($this->month) . '/');//add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year-1));
-				$next_year_link = home_url('events/' . ($this->year+1) . '/' . ($this->month) . '/');//add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year+1));
-				$prev_month_link = home_url('events/' . ($this->year) . '/' . ($this->month-1) . '/');//add_query_arg(array('cal_month' => $this->month-1, 'cal_year' => $this->year));
-				$next_month_link = home_url('events/' . ($this->year) . '/' . ($this->month+1) . '/');//add_query_arg(array('cal_month' => $this->month+1, 'cal_year' => $this->year));
+				$prev_year_link = add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year-1));
+				$next_year_link = add_query_arg(array('cal_month' => $this->month, 'cal_year' => $this->year+1));
+				$prev_month_link = add_query_arg(array('cal_month' => $this->month-1, 'cal_year' => $this->year));
+				$next_month_link = add_query_arg(array('cal_month' => $this->month+1, 'cal_year' => $this->year));
 			}
 
 		}else{
@@ -309,22 +310,24 @@ class JCE_Calendar{
 			padding:5px;
 		}
 
-		.cal-day-wrapper li{
-			background: red;
-			color:#FFF;
-			padding:1px;
-			text-indent: 5px;
-			font-size: 10px;
-		}
-
 		.cal ul, .cal li{
 			margin: 0;
 			padding: 0;
 			list-style: none;
 		}
 
-		.cal li{
+		.cal-day-wrapper li{
+			background: red;
+			color:#FFF;
+			padding:1px;
+			padding: 2px 5px;
+			font-size: 10px;
 			margin-bottom:2px;
+			line-height: 1.1;
+		}
+
+		.cal-day-wrapper li a, .cal-day-wrapper li a:visited{
+			color: #FFF;
 		}
 
 		<?php 
@@ -354,12 +357,26 @@ class JCE_Calendar{
 				}elseif($tile == 1 && $curr_month == false){
 					$curr_month = true;
 				}
+
+				$classes = array('cal-day');
+				if(isset($events['tiles'][$tile]) && $curr_month == true){
+					$classes[] = 'has-event';
+				}
+				if($curr_month == false){
+					$classes[] = 'prev-next';
+				}
 				?>
 
 				<?php if($row_counter == 1): ?><div class="cal-days-row"><?php endif; ?>
-					<div class="<?php if(isset($events['tiles'][$tile]) && $curr_month == true): ?>has-event<?php endif; ?> cal-day <?php if($curr_month == false): ?>prev-next<?php endif; ?>">
+					<div class="<?php echo implode(' ', $classes); ?>">
 						<div class="cal-day-wrapper">
-						<span class="date" title=""><?php echo $tile; ?></span>
+						<span class="date" title="">
+						<?php if($curr_month == true): ?>
+							<a href="<?php echo add_query_arg(array( 'cal_day' => $tile, 'cal_month' => $this->month, 'cal_year' => $this->year)); ?>"><?php echo $tile; ?></a>
+						<?php else: ?>
+							<?php echo $tile; ?>
+						<?php endif; ?>
+						</span>
 						<?php 
 						if(isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
 							echo '<ul>'."\n";

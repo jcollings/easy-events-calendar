@@ -7,6 +7,7 @@ class JCE_Query{
 
 	private $cal_month = null;
 	private $cal_year = null;
+	private $cal_day = null;
 
 	public function __construct(){
 
@@ -30,7 +31,7 @@ class JCE_Query{
 				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
 			}elseif($view == 'archive'){
 				remove_action( 'jce/before_event_content', 'jce_add_archive_month');
-				add_action('jce/before_event_archive', 'output_archive_heading');
+				add_action('jce/before_event_archive', 'jce_output_monthly_archive_heading');
 				add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
 				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
 			}else{
@@ -74,6 +75,26 @@ class JCE_Query{
 		));
 	}
 
+	public function get_daily_events($day = null, $month = null, $year = null){
+
+		if(!empty($day)){
+			$this->cal_day = $day;
+		}
+
+		if(!empty($month)){
+			$this->cal_month = $month;
+		}
+		
+		if(!empty($year)){
+			$this->cal_year = $year;
+		}
+
+		add_filter( 'posts_clauses', array($this, 'setup_day_query'), 10);
+		return new WP_Query(array(
+			'post_type' => 'event'
+		));
+	}
+
 	public function setup_upcoming_query($query){
 
 		global $wpdb;
@@ -110,6 +131,43 @@ class JCE_Query{
 		return $query;
 	}
 
+	public function setup_day_query($query){
+
+		global $wpdb;
+
+		$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : $this->cal_year;
+		$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : $this->cal_month;
+		$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : $this->cal_day;
+
+		$date = "$year-$month-$day";
+
+		$query['where'] = "
+		AND ({$wpdb->prefix}posts.post_type  = 'event')
+		AND ({$wpdb->prefix}posts.post_status = 'publish')
+		AND mt3.meta_key = '_event_length'
+		AND 
+		(
+			{$wpdb->prefix}postmeta.meta_key = '_event_start_date' 
+			AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) <= '$date'
+			AND mt2.meta_key = '_event_end_date'  
+			AND CAST(mt2.meta_value AS DATE) >= '$date' 
+		)";
+
+		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";
+		$query['orderby'] = "{$wpdb->prefix}postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN {$wpdb->prefix}postmeta ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt1 ON ({$wpdb->prefix}posts.ID = mt1.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt2 ON ({$wpdb->prefix}posts.ID = mt2.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt3 ON ({$wpdb->prefix}posts.ID = mt3.post_id)";
+		$query['fields'] = "{$wpdb->prefix}postmeta.meta_value AS start_date, DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, {$wpdb->prefix}posts.*";
+		$query['limits'] = "";
+
+		$query = apply_filters( 'jce/setup_day_query', $query, $day, $month, $year);
+		remove_filter( 'posts_clauses', array($this, 'setup_day_query'), 10);
+
+		return $query;
+	}
+
 	public function setup_month_query($query){
 
 		global $wpdb;
@@ -133,7 +191,7 @@ class JCE_Query{
 			)
 			OR
 			(
-				{$wpdb->prefix}postmeta.meta_key = '_event_start_date' 
+				{$wpdb->prefix}postmeta.meta_key = '_event_end_date' 
 				AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) >= '$start_date' 
 				AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) <= '$end_date' 
 			)

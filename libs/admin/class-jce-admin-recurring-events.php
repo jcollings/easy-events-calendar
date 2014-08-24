@@ -13,6 +13,7 @@ class JCE_Admin_RecurringEvents{
 		add_action( 'jce/admin_meta_fields', array( $this, 'show_metabox' ), 10, 2 );
 		add_action('jce/save_event', array( $this, 'save_event'), 10, 1);
 
+		add_filter( 'jce/setup_day_query', array( $this, 'setup_day_query'), 10 , 4);
 		add_filter( 'jce/setup_month_query', array( $this, 'setup_month_query'), 10 , 3);
 		add_filter( 'jce/setup_upcoming_query', array( $this, 'setup_upcoming_query'), 10 , 1);
 
@@ -193,6 +194,30 @@ class JCE_Admin_RecurringEvents{
 			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$start_date') 
 			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) <= '$end_date') 
 			) 
+		)";
+
+		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";
+		$query['orderby'] = "{$wpdb->prefix}postmeta.meta_value ASC";
+		$query['join'] = "INNER JOIN {$wpdb->prefix}postmeta ON ({$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id)
+		INNER JOIN {$wpdb->prefix}postmeta AS mt3 ON ({$wpdb->prefix}posts.ID = mt3.post_id)";
+		$query['fields'] = "{$wpdb->prefix}postmeta.meta_value AS start_date, DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS end_date, mt3.meta_value AS event_length, {$wpdb->prefix}posts.*";
+		return $query;
+	}
+
+	public function setup_day_query($query, $day, $month, $year){
+
+		global $wpdb;
+
+		$date = "$year-$month-$day";
+
+		$query['where'] = "
+		AND ({$wpdb->prefix}posts.post_type = 'event') 
+		AND ({$wpdb->prefix}posts.post_status = 'publish') 
+		AND 
+		( 
+			{$wpdb->prefix}postmeta.meta_key = '_revent_start_date' 
+			AND CAST({$wpdb->prefix}postmeta.meta_value AS DATE) <= '$date'
+			AND (mt3.meta_key = '_event_length' AND CAST(DATE_ADD({$wpdb->prefix}postmeta.meta_value, INTERVAL mt3.meta_value SECOND) AS DATE) >= '$date')  
 		)";
 
 		$query['groupby'] = "{$wpdb->prefix}postmeta.meta_id";

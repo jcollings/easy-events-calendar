@@ -1,0 +1,1 @@
+<h1 class="jce-event-title"><?php echo apply_filters( 'jce/single_event_title', get_the_title() ); ?></h1>

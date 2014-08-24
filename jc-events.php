@@ -78,6 +78,7 @@ class JCEvents2 {
         $public_query_vars[] = 'event_day';
         $public_query_vars[] = 'cal_month';
         $public_query_vars[] = 'cal_year';
+        $public_query_vars[] = 'cal_day';
         return $public_query_vars;
 	}
 }

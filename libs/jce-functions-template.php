@@ -163,14 +163,19 @@ function jce_event_end_date($format = 'd/m/Y', $echo = true){
 }
 
 // Add event title to event
+add_action( 'jce/single_event_header', 'jce_add_event_title', 10 );
 add_action( 'jce/event_header', 'jce_add_event_title', 10 );
 function jce_add_event_title(){
-	?>
-	<h2 class="jce-event-title"><a href="<?php the_permalink(); ?>"><?php echo apply_filters( 'jce/event_title', get_the_title() ); ?></a></h2>
-	<?php
+
+	if(is_single()){
+		jce_get_template_part('single-event/title');
+	}else{
+		jce_get_template_part('archive-event/title');
+	}	
 }
 
 // Add event meta to event
+add_action( 'jce/single_event_header', 'jce_add_event_meta', 20 );
 add_action( 'jce/event_header', 'jce_add_event_meta', 20 );
 function jce_add_event_meta(){
 	?>
@@ -195,6 +200,9 @@ function jce_update_event_title($title){
 	return $title;
 }
 
+/**
+ * Event Archive Content
+ */
 add_action( 'jce/before_event_content', 'jce_add_archive_month');
 function jce_add_archive_month(){
 
@@ -228,7 +236,7 @@ function jce_after_event_archive(){
 /**
  * Display monthly title in archive only
  */
-function output_archive_heading(){
+function jce_output_monthly_archive_heading(){
 
 	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');
 	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
@@ -250,9 +258,83 @@ function output_archive_heading(){
 }
 
 /**
+ * Display monthly title in archive only
+ */
+function jce_output_daily_archive_heading(){
+
+	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');
+	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
+	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : date('d');
+
+	// if(($month - 1) <= 0){
+	// 	$prev_link = add_query_arg(array('cal_year' => ($year - 1), 'cal_month' => 12));
+	// 	$next_link = add_query_arg(array('cal_year' => $year, 'cal_month' => ($month+1)));
+	// }elseif(($month + 1) > 12){
+	// 	$prev_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month-1)));
+	// 	$next_link = add_query_arg(array('cal_year' => ($year+1), 'cal_month' => (1)));
+	// }else{
+	// 	$prev_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month-1)));
+	// 	$next_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month+1)));
+	// }
+
+	$title = date('l jS, F Y', strtotime("$year-$month-$day")); 
+
+	echo "<h2 class=\"jce-archive-title\">".$title."</h2>";
+}
+
+/**
  * Do pagination
  */
 add_action( 'jce/after_event_loop', 'jce_output_pagination' );
 function jce_output_pagination(){
 	jce_pagination();
+}
+
+/**
+ * Single Event content
+ */
+add_action('jce/single_event_content', 'jce_add_single_event_content', 10);
+function jce_add_single_event_content(){
+	?>
+	<div class="jce-event-content">
+		<h2>Event Details</h2>
+		<?php the_content(); ?>
+	</div>
+	<?php
+}
+
+add_action('jce/single_event_content', 'jce_add_single_event_venue', 15);
+function jce_add_single_event_venue(){
+	?>
+	<div clas="jce-event-venue">
+		<h2>Venue</h2>
+		<p>Name: <?php jce_event_venue_meta(); ?><br />
+		Address: <?php jce_event_venue_meta('address'); ?><br />
+		City: <?php jce_event_venue_meta('city'); ?><br />
+		Postcode: <?php jce_event_venue_meta('postcode'); ?></p>
+	</div>
+	<?php
+}
+
+add_action('jce/single_event_content', 'jce_add_single_event_organiser', 15);
+function jce_add_single_event_organiser(){
+	?>
+	<div clas="jce-event-organiser">
+		<h2>Organiser</h2>
+		<p>Name: <?php jce_event_organiser_meta(); ?><br />
+		Phone: <?php jce_event_organiser_meta('phone'); ?><br />
+		Email: <?php jce_event_organiser_meta('email'); ?><br />
+		Website: <?php jce_event_organiser_meta('website'); ?></p>
+	</div>
+	<?php
+}
+
+add_action('jce/before_event_loop', 'jce_add_single_back_btn');
+function jce_add_single_back_btn(){
+
+	if(!is_single())
+		return false;
+	?>
+	<a href="<?php echo site_url('?post_type=event'); ?>">&lt; Back to Events</a>
+	<?php
 }

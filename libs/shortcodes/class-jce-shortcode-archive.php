@@ -5,9 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class JCE_Shortcode_Archive{
 
-	private $cal_year = false;
-	private $cal_month = false;
-
 	public function __construct(){
 
 		add_shortcode( 'jce_event_archive', array($this, 'event_archive') );
@@ -18,21 +15,26 @@ class JCE_Shortcode_Archive{
 		extract( shortcode_atts( array(
 			'view' => 'upcoming',
 			'month' => date('m'),
-			'year' => date('Y')
+			'year' => date('Y'),
+			'day' => false
 		), $atts, 'jce_event_archive' ) );
-
-		$this->cal_year = $year;
-		$this->cal_month = $month;
 
 		switch($view){
 			case 'upcoming':
 				$events = JCE()->query->get_events(array('posts_per_page' => 10, 'paged' => get_query_var( 'paged' )));
 			break;
 			case 'archive':
+				if(intval($day) > 0){
+					add_action('jce/before_event_archive', 'jce_output_daily_archive_heading');
+					$events = JCE()->query->get_daily_events($day, $month, $year);
+				}else{
+					add_action('jce/before_event_archive', 'jce_output_monthly_archive_heading');
+					$events = JCE()->query->get_calendar($month, $year);
+				}
+
+				
 				remove_action( 'jce/before_event_content', 'jce_add_archive_month');
-				add_action('jce/before_event_archive', 'output_archive_heading');
 				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
-				$events = JCE()->query->get_calendar($month, $year);
 			break;
 		}
 
