@@ -23,6 +23,8 @@ class JCE_Shortcode_Calendar{
 
 		ob_start();
 
+		do_action( 'jce/before_event_calendar' );
+
 		$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : $year;
 		$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : $month;
 		$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : $day;
@@ -34,8 +36,7 @@ class JCE_Shortcode_Calendar{
 		$calendar->set_month($year, $month);
 		$calendar->render($events->posts);
 
-		// get the selected days events
-		echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" /]' );
+		do_action( 'jce/after_event_calendar' );
 
 		$output = ob_get_contents();
 		ob_end_clean();

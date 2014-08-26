@@ -338,3 +338,13 @@ function jce_add_single_back_btn(){
 	<a href="<?php echo site_url('?post_type=event'); ?>">&lt; Back to Events</a>
 	<?php
 }
+
+add_action('jce/after_event_calendar', 'jce_output_daily_archive');
+function jce_output_daily_archive(){
+
+	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');
+	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
+	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : date('d');
+
+	echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" /]' );	
+}

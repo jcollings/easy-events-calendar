@@ -1,6 +1,8 @@
 <?php
 get_header(); ?>
 
+<?php do_action('before_theme_content'); ?>
+
 <?php do_action( 'jce/before_single_event' ); ?>
 
 <?php if(have_posts()): ?>
@@ -18,5 +20,7 @@ get_header(); ?>
 <?php endif; ?>
 
 <?php do_action( 'jce/after_single_event' ); ?>
+
+<?php do_action('after_theme_content'); ?>
 
 <?php get_footer(); ?>
