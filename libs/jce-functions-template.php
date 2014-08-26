@@ -346,5 +346,118 @@ function jce_output_daily_archive(){
 	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
 	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : date('d');
 
+	// remove event archive
+	remove_action('jce/before_event_archive', 'jce_output_event_filters', 11);
+
 	echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" /]' );	
+
+	// re-add event archive
+	add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
+}
+
+add_action('jce/before_event_calendar', 'jce_output_event_filters', 11);
+add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
+function jce_output_event_filters(){
+
+	// get venue list
+	$temp = get_terms( 'event_venue');
+	$venues = array();
+	foreach($temp as $x){
+		$venues[$x->slug] = $x->name;
+	}
+
+	// get organiser list
+	$temp = get_terms( 'event_organiser');
+	$organisers = array();
+	foreach($temp as $x){
+		$organisers[$x->slug] = $x->name;
+	}
+
+	// get calendar list
+	$temp = get_terms( 'event_calendar');
+	$calendars = array();
+	foreach($temp as $x){
+		$calendars[$x->slug] = $x->name;
+	}
+
+	// get tag list
+	$temp = get_terms( 'event_tag');
+	$tags = array();
+	foreach($temp as $x){
+		$tags[$x->slug] = $x->name;
+	}
+
+	// get category list
+	$temp = get_terms( 'event_category');
+	$categories = array();
+	foreach($temp as $x){
+		$categories[$x->slug] = $x->name;
+	}
+
+	?>
+	<div class="filters">
+		<form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="GET">
+
+			<?php if(is_post_type_archive('event')):?>
+			<input type="hidden" name="post_type" value="event" />
+			<?php elseif(is_page()): ?>
+			<input type="hidden" name="page_id" value="<?php echo get_query_var('page_id'); ?>" />
+			<?php endif; ?>
+
+			<div class="input select">
+				<label for="event_venue">Venue</label>
+				<select name="event_venue" id="event_venue">
+					<option value="">All</option>
+					<?php foreach($venues as $key => $value): ?>
+						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_venue' ), $key, true ); ?>><?php echo $value; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="input select">
+				<label for="event_organiser">Organiser</label>
+				<select name="event_organiser" id="event_organiser">
+					<option value="">All</option>
+					<?php foreach($organisers as $key => $value): ?>
+						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_organiser' ), $key, true ); ?>><?php echo $value; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="input select">
+				<label for="event_calendar">Calendar</label>
+				<select name="event_calendar" id="event_calendar">
+					<option value="">All</option>
+					<?php foreach($calendars as $key => $value): ?>
+						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_calendar' ), $key, true ); ?>><?php echo $value; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="input select">
+				<label for="event_tag">Tags</label>
+				<select name="event_tag" id="event_tag">
+					<option value="">All</option>
+					<?php foreach($tags as $key => $value): ?>
+						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_tag' ), $key, true ); ?>><?php echo $value; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="input select">
+				<label for="event_category">Categories</label>
+				<select name="event_category" id="event_category">
+					<option value="">All</option>
+					<?php foreach($categories as $key => $value): ?>
+						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_category' ), $key, true ); ?>><?php echo $value; ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+
+			<div class="input submit">
+				<input type="submit" value="filter" />
+			</div>
+		</form>
+	</div>
+	<?php
 }
