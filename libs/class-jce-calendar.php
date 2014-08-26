@@ -25,6 +25,14 @@ class JCE_Calendar{
 	var $next_year_link = '&raquo;';
 	var $prev_month_link = '&lt;';
 	var $next_month_link = '&gt;';
+	var $inline_events = false;
+	var $cal_id = 'cal';
+
+	function __construct(){
+		if(is_admin()){
+			$this->inline_events = true;
+		}
+	}
 
 	function set_week_start($day = 'Mon'){
 
@@ -185,6 +193,8 @@ class JCE_Calendar{
 	function output_cal_header(){
 		global $post, $wp_rewrite;
 
+		$header_str = "<h2>[month], [year] - [[prev_month]][[next_month]]</h2>";
+
 		if($wp_rewrite->permalink_structure){
 
 			// todo: match chosen permalink structure
@@ -227,21 +237,26 @@ class JCE_Calendar{
 		}
 
 		$output = '<div class="cal-nav">'."\n";
-		if($this->prev_year_link)
-			$output .= '<a href="'.$prev_year_link.'">'.$this->prev_year_link.'</a>'."\n";
-
-		if($this->prev_month_link)
-			$output .= '<a href="'.$prev_month_link.'">'.$this->prev_month_link. '</a>'."\n";
-
-		$output .= '<span>'.ucfirst($this->month_name).' '.$this->year.'</span>'."\n";
-
-		if($this->prev_month_link)
-			$output .= '<a href="'.$next_month_link.'">'.$this->next_month_link. '</a>'."\n";
-
-		if($this->next_year_link)
-			$output .= '<a href="'.$next_year_link.'">'.$this->next_year_link.'</a>'."\n";
-
+		$output .= $header_str;
 		$output .= '</div><!-- /.cal-nav -->'."\n";
+
+		// shortcode calendar header
+		$output = preg_replace(array(
+			'/\[prev_year\]/',
+			'/\[prev_month\]/',
+			'/\[next_year\]/',
+			'/\[next_month\]/',
+			'/\[month\]/',
+			'/\[year\]/',
+		), array(
+			'<a href="'.$prev_year_link.'">'.$this->prev_year_link.'</a>',
+			'<a href="'.$prev_month_link.'">'.$this->prev_month_link. '</a>',
+			'<a href="'.$next_year_link.'">'.$this->next_year_link.'</a>',
+			'<a href="'.$next_month_link.'">'.$this->next_month_link. '</a>',
+			ucfirst($this->month_name),
+			ucfirst($this->year)
+		), $output);
+		
 		return $output;
 	}
 
@@ -278,7 +293,7 @@ class JCE_Calendar{
 		}
 		.cal-nav{
 			width:100%;
-			text-align: center;
+			text-align: left;
 		}
 		.cal-nav a, .cal-nav span{
 			margin:0 2px;
@@ -304,10 +319,14 @@ class JCE_Calendar{
 		}
 
 		.cal-day .cal-day-wrapper{
-			height:100px;
+			height:80px;
 			border:1px solid #EEE;
 			display: block;
 			padding:5px;
+		}
+
+		.inline-events .cal-day .cal-day-wrapper{
+			height:120px;
 		}
 
 		.cal ul, .cal li{
@@ -324,10 +343,34 @@ class JCE_Calendar{
 			font-size: 10px;
 			margin-bottom:2px;
 			line-height: 1.1;
+			display: inline;
 		}
 
 		.cal-day-wrapper li a, .cal-day-wrapper li a:visited{
 			color: #FFF;
+		}
+
+		.cal .has-event{
+			color: #7c7c7c;
+			background-color: #e6e6e6;
+			background-repeat: repeat-x;
+			background-image: -moz-linear-gradient(top, #f4f4f4, #e6e6e6);
+			background-image: -ms-linear-gradient(top, #f4f4f4, #e6e6e6);
+			background-image: -webkit-linear-gradient(top, #f4f4f4, #e6e6e6);
+			background-image: -o-linear-gradient(top, #f4f4f4, #e6e6e6);
+			background-image: linear-gradient(top, #f4f4f4, #e6e6e6);
+		}
+
+		.cal .current-month:hover{
+			cursor: pointer;
+			color: #7c7c7c;
+			background-color: #e6e6e6;
+			background-repeat: repeat-x;
+			background-image: -moz-linear-gradient(top, #e6e6e6, #f4f4f4);
+			background-image: -ms-linear-gradient(top, #e6e6e6, #f4f4f4);
+			background-image: -webkit-linear-gradient(top, #e6e6e6, #f4f4f4);
+			background-image: -o-linear-gradient(top, #e6e6e6, #f4f4f4);
+			background-image: linear-gradient(top, #e6e6e6, #f4f4f4);
 		}
 
 		<?php 
@@ -344,7 +387,7 @@ class JCE_Calendar{
 		?>
 
 		</style>
-		<div class="cal">
+		<div class="cal<?php if($this->inline_events == true): ?> inline-events<?php endif; ?>" id="<?php echo $this->cal_id; ?>">
 			<?php echo $this->output_cal_header(); ?>
 			<?php echo $this->output_cal_weekdays(); ?>
 			
@@ -359,11 +402,14 @@ class JCE_Calendar{
 				}
 
 				$classes = array('cal-day');
-				if(isset($events['tiles'][$tile]) && $curr_month == true){
+				if(isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
 					$classes[] = 'has-event';
 				}
+
 				if($curr_month == false){
 					$classes[] = 'prev-next';
+				}else{
+					$classes[] = 'current-month';
 				}
 				?>
 
@@ -372,13 +418,15 @@ class JCE_Calendar{
 						<div class="cal-day-wrapper">
 						<span class="date" title="">
 						<?php if($curr_month == true): ?>
-							<a href="<?php echo add_query_arg(array( 'cal_day' => $tile, 'cal_month' => $this->month, 'cal_year' => $this->year)); ?>"><?php echo $tile; ?></a>
+							<a href="<?php echo add_query_arg(array( 'cal_day' => $tile, 'cal_month' => $this->month, 'cal_year' => $this->year)); ?>#<?php echo $this->cal_id; ?>"><?php echo $tile; ?></a>
 						<?php else: ?>
 							<?php echo $tile; ?>
 						<?php endif; ?>
 						</span>
 						<?php 
-						if(isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
+						if($this->inline_events == true && isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
+
+							// display events with links
 							echo '<ul>'."\n";
 							foreach($sorted_events[$tile] as $e){
 
@@ -388,19 +436,35 @@ class JCE_Calendar{
 									$temp[] = $event->slug;
 								}
 
-								if($e['parent'] == 0){
-									$parent = $e['id'];
+								if(is_admin()){
+									echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'.get_edit_post_link($e['id'] ) .'">'.$e['title'].'</a></li>'."\n";
 								}else{
-									$parent = $e['parent'];
+									echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";
 								}
-								// add_query_arg('event_id', $e['id'])
-								// if(!empty($temp)){
-								// 	echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";	
-								// }else{
-								// 	echo '<li class="event-list">'.$e['title'].'</li>'."\n";	
-								// }
+								
+							}
+							echo '</ul>'."\n";
+						}elseif($this->inline_events == false && isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
+							
+							// display calendar counters
+							$cals = array();
+							echo '<ul>'."\n";
+							foreach($sorted_events[$tile] as $e){
 
-								echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";
+								$temp = array();
+								$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
+								foreach($post_event_cals as $event){
+									$temp[] = $event->slug;
+									if(!isset($cals[$event->slug])){
+										$cals[$event->slug] = 1;
+									}else{
+										$cals[$event->slug]++;
+									}
+								}
+							}
+
+							foreach($cals as $k => $cal){
+								echo '<li class="event-list '.$k.'">'.$cal.'</li>'."\n";
 							}
 							echo '</ul>'."\n";
 						}

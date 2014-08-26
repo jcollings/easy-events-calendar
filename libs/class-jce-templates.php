@@ -13,6 +13,11 @@ class JCE_Templates{
 	}
 
 	public function enqueue_scripts(){
+
+		
+		wp_enqueue_script('jcevents-admin-js', JCE()->plugin_url .'/assets/js/public.js', array('jquery'), '1.0', true);
+		wp_localize_script( 'jcevents-admin-js', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'we_value' => 1234 ) );
+
 		if(JCE()->disable_css || is_admin())
 			return;
 

@@ -1,4 +1,20 @@
-#icon-edit.icon32-posts-event { 
+li#menu-posts-event .wp-menu-image:before {
+	background: url(../img/icon_16_grey.png) no-repeat 0 10px !important;
+	content: "";
+}
+li#menu-posts-event:hover .wp-menu-image:before {
+	background: url(../img/icon_16_grey.png) no-repeat 0 10px !important;
+}
+li#menu-posts-event.wp-has-current-submenu .wp-menu-image:before {
+	background: url(../img/icon_16_grey.png) no-repeat 0 10px !important;
+}
+
+.post-type-event .wrap > h2{
+	background: url(../img/icon_32.png) no-repeat 0 7px;
+	padding-left: 40px;
+}
+
+/*#icon-edit.icon32-posts-event { 
 	background:transparent url('../img/icon-large.png') no-repeat; 
 }     
 
@@ -9,7 +25,7 @@
 #adminmenu #menu-posts-event:hover div.wp-menu-image,
 #adminmenu #menu-posts-event.wp-has-current-submenu div.wp-menu-image{
 	background:transparent url('../img/icon.png') no-repeat center center;
-}  
+}  */
 
 .input.text{
 	overflow: hidden;

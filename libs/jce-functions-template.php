@@ -262,9 +262,13 @@ function jce_output_monthly_archive_heading(){
  */
 function jce_output_daily_archive_heading(){
 
-	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');
-	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
-	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : date('d');
+	$d = JCE()->query->get_day();
+	$m = JCE()->query->get_month();
+	$y = JCE()->query->get_year();
+
+	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : $y;
+	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : $m;
+	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : $d;
 
 	// if(($month - 1) <= 0){
 	// 	$prev_link = add_query_arg(array('cal_year' => ($year - 1), 'cal_month' => 12));
@@ -335,8 +339,12 @@ function jce_add_single_back_btn(){
 	if(!is_single())
 		return false;
 	?>
-	<a href="<?php echo site_url('?post_type=event'); ?>">&lt; Back to Events</a>
-	<?php
+
+	<?php if(get_option('permalink_structure')): ?>
+		<a href="<?php echo site_url('/events'); ?>">&lt; Back to Events</a>
+	<?php else: ?>
+		<a href="<?php echo site_url('?post_type=event'); ?>">&lt; Back to Events</a>
+	<?php endif;
 }
 
 add_action('jce/after_event_calendar', 'jce_output_daily_archive');
@@ -349,7 +357,9 @@ function jce_output_daily_archive(){
 	// remove event archive
 	remove_action('jce/before_event_archive', 'jce_output_event_filters', 11);
 
+	echo "<div id=\"daily_ajax_response\">";
 	echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" /]' );	
+	echo "</div>";
 
 	// re-add event archive
 	add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
@@ -395,19 +405,19 @@ function jce_output_event_filters(){
 	}
 
 	?>
-	<div class="filters">
-		<form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="GET">
+	<div class="jce-archive-filters">
+		<form action="#" method="GET">
 
-			<?php if(is_post_type_archive('event')):?>
+			<?php if(!get_option('permalink_structure') && is_post_type_archive('event')):?>
 			<input type="hidden" name="post_type" value="event" />
-			<?php elseif(is_page()): ?>
+			<?php elseif(!get_option('permalink_structure') && is_page()): ?>
 			<input type="hidden" name="page_id" value="<?php echo get_query_var('page_id'); ?>" />
 			<?php endif; ?>
 
 			<div class="input select">
 				<label for="event_venue">Venue</label>
 				<select name="event_venue" id="event_venue">
-					<option value="">All</option>
+					<option value="">All Venues</option>
 					<?php foreach($venues as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_venue' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
@@ -417,7 +427,7 @@ function jce_output_event_filters(){
 			<div class="input select">
 				<label for="event_organiser">Organiser</label>
 				<select name="event_organiser" id="event_organiser">
-					<option value="">All</option>
+					<option value="">All Organisers</option>
 					<?php foreach($organisers as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_organiser' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
@@ -427,7 +437,7 @@ function jce_output_event_filters(){
 			<div class="input select">
 				<label for="event_calendar">Calendar</label>
 				<select name="event_calendar" id="event_calendar">
-					<option value="">All</option>
+					<option value="">All Calendars</option>
 					<?php foreach($calendars as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_calendar' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
@@ -437,7 +447,7 @@ function jce_output_event_filters(){
 			<div class="input select">
 				<label for="event_tag">Tags</label>
 				<select name="event_tag" id="event_tag">
-					<option value="">All</option>
+					<option value="">All Tags</option>
 					<?php foreach($tags as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_tag' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
@@ -447,7 +457,7 @@ function jce_output_event_filters(){
 			<div class="input select">
 				<label for="event_category">Categories</label>
 				<select name="event_category" id="event_category">
-					<option value="">All</option>
+					<option value="">All Categories</option>
 					<?php foreach($categories as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_category' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>

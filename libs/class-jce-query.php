@@ -15,10 +15,22 @@ class JCE_Query{
 		$this->cal_month = date('m');
 		$this->cal_year = date('Y');
 
-		if(!is_admin()){
+		if(!is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
 			add_action( 'pre_get_posts', array($this, 'pre_get_posts'), 0);
 			add_action('the_post', array($this, 'the_post'));
 		}
+	}
+
+	public function get_day(){
+		return $this->cal_day;
+	}
+
+	public function get_month(){
+		return $this->cal_month;
+	}
+
+	public function get_year(){
+		return $this->cal_year;
 	}
 
 	public function pre_get_posts($query){
@@ -382,6 +394,10 @@ class JCE_Query{
 		$output = array();
 
 		foreach($keys as $k){
+
+			if(!isset($output[$k])){
+				$output[$k] = '';
+			}
 
 			if(isset($main[$k])){
 				$output[$k] .= $main[$k];

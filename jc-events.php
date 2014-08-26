@@ -42,6 +42,8 @@ class JCEvents2 {
 		// include required files
 		$this->includes();
 
+		$this->load_settings();
+
 		add_action( 'query_vars' , array( $this, 'register_query_vars' ) );
 
 		do_action( 'jcevents_loaded' );
@@ -62,6 +64,7 @@ class JCEvents2 {
 		include_once 'libs/admin/class-jce-admin-calendars.php';
 		include_once 'libs/admin/class-jce-admin-post-types.php';
 		include_once 'libs/admin/class-jce-admin-recurring-events.php';
+		include_once 'libs/admin/class-jce-admin-settings.php';
 
 		// shortcodes
 		include_once 'libs/shortcodes/class-jce-shortcode-archive.php';
@@ -70,6 +73,13 @@ class JCEvents2 {
 		// functions
 		include_once 'libs/jce-functions-general.php';
 		include_once 'libs/jce-functions-template.php';
+	}
+
+	public function load_settings(){
+		$config = get_option('jce_config');
+		if(isset($config['event_archive_view'])){
+			$this->default_view = $config['event_archive_view'];
+		}
 	}
 
 	public function register_query_vars($public_query_vars ){

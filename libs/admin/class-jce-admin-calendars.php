@@ -60,7 +60,7 @@ class JCE_Admin_Calendars{
 
 		            <div id="postbox-container-1" class="postbox-container">
 		                <div id="postimagediv" class="postbox ">
-		                    <h3 class="hndle"><span>Calendars</span> - <a href="edit-tags.php?taxonomy=event_calendar">Manage</a></h3>
+		                    <h3 class="hndle"><span>Calendars</span> - <a href="edit-tags.php?taxonomy=event_calendar&post_type=event">Manage</a></h3>
 		                    <div class="inside">
 		                        <form method="post">
 		                            <input type="hidden" name="action" value="manage_calendars">

@@ -9,7 +9,7 @@
 	padding:0;
 }
 
-.jce-archive-title{
+.jce-archive-title, .cal-nav h2{
 	border-bottom: 2px solid #333;
 	margin: 0 0 10px;
 	padding: 5px 10px;
@@ -56,4 +56,19 @@
 
 .jce-event-meta{
 
+}
+
+.jce-archive-filters{
+	margin-bottom: 20px;
+}
+
+.jce-archive-filters label {
+    display: block;
+}
+.jce-archive-filters .select {
+    float:left;
+}
+
+.jce-archive-filters .submit{
+	clear:left;
 }

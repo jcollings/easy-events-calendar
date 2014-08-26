@@ -287,7 +287,7 @@ class JCE_Admin_RecurringEvents{
 				if(!$type){
 					$type = 'None';
 				}
-				echo $type;
+				echo $type . ' ('.count(get_post_meta( $post->ID, '_revent_start_date')).')';
 			break;
 		}
 	}
