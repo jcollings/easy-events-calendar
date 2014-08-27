@@ -2,7 +2,7 @@
 /*
 	Plugin Name: JC Events Calendar
 	Plugin URI: http://www.jamescollings.co.uk/jc-events
-	Description: Easy to install and use events calendar
+	Description: JC Events Calendar is an event calendar built with developers in mind, giving you calendar, archive and upcoming views with the power of repeating events right out of the box. 
 	Version: 0.0.2
 	Author: James Collings
 	Author URI: http://www.jamescollings.co.uk
@@ -45,6 +45,8 @@ class JCEvents2 {
 		$this->load_settings();
 
 		add_action( 'query_vars' , array( $this, 'register_query_vars' ) );
+
+		register_activation_hook( __FILE__, array( $this, 'plugin_activation') );
 
 		do_action( 'jcevents_loaded' );
 	}
@@ -90,6 +92,10 @@ class JCEvents2 {
         $public_query_vars[] = 'cal_year';
         $public_query_vars[] = 'cal_day';
         return $public_query_vars;
+	}
+
+	public function plugin_activation(){
+		flush_rewrite_rules();
 	}
 }
 

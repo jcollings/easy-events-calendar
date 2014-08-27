@@ -178,9 +178,19 @@ function jce_add_event_title(){
 add_action( 'jce/single_event_header', 'jce_add_event_meta', 20 );
 add_action( 'jce/event_header', 'jce_add_event_meta', 20 );
 function jce_add_event_meta(){
+
+	$start_date = jce_event_start_date('jS', false);
+	$end_date = jce_event_end_date('jS', false);
 	?>
 	<div class="jce-event-meta">
-		<p>From: <?php jce_event_start_date('jS F Y g:i a'); ?> - <?php jce_event_end_date('jS F Y g:i a'); ?></p>
+		<?php
+		if($start_date != $end_date){
+			echo "<p>".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('jS F Y g:i a', false)."</p>";
+		}else{
+			echo "<p>".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</p>";
+		}
+		?>
+		
 	</div>
 	<?php
 }

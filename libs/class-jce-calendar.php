@@ -269,7 +269,66 @@ class JCE_Calendar{
 		return $output;
 	}
 
+	public function output_inline_events($day, $events, $current_month){
+
+		if(empty($events) || !$current_month)
+			return;
+
+		// display events with links
+		echo '<ul>'."\n";
+		foreach($events as $e){
+
+			$temp = array();
+			$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
+			foreach($post_event_cals as $event){
+				$temp[] = $event->slug;
+			}
+
+			if(is_admin()){
+				echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'.get_edit_post_link($e['id'] ) .'">'.$e['title'].'</a></li>'."\n";
+			}else{
+				echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";
+			}
+			
+		}
+		echo '</ul>'."\n";
+	}
+
+	public function output_grouped_events($day, $events, $current_month){
+
+		if(empty($events) || !$current_month)
+			return;
+
+		// display calendar counters
+		$cals = array();
+		echo '<ul>'."\n";
+		foreach($events as $e){
+
+			$temp = array();
+			$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
+			foreach($post_event_cals as $event){
+				$temp[] = $event->slug;
+				if(!isset($cals[$event->slug])){
+					$cals[$event->slug] = 1;
+				}else{
+					$cals[$event->slug]++;
+				}
+			}
+		}
+
+		foreach($cals as $k => $cal){
+			echo '<li class="event-list '.$k.'">'.$cal.'</li>'."\n";
+		}
+		echo '</ul>'."\n";
+	}
+
 	function render($events = array()){
+
+		if($this->inline_events){
+			add_action('jce/output_tile', array( $this, 'output_inline_events'), 10, 3);
+		}else{
+			add_action('jce/output_tile', array( $this, 'output_grouped_events'), 10, 3);
+		}
 
 		$row_counter = 0;
 		$curr_month = false; // true if tile is in the current month
@@ -346,6 +405,10 @@ class JCE_Calendar{
 			display: inline;
 		}
 
+		.inline-events .cal-day-wrapper li{
+			display: block;
+		}
+
 		.cal-day-wrapper li a, .cal-day-wrapper li a:visited{
 			color: #FFF;
 		}
@@ -387,7 +450,7 @@ class JCE_Calendar{
 		?>
 
 		</style>
-		<div class="cal<?php if($this->inline_events == true): ?> inline-events<?php endif; ?>" id="<?php echo $this->cal_id; ?>">
+		<div class="cal<?php if($this->inline_events == true): ?> inline-events<?php else: ?> no-inline-events<?php endif; ?>" id="<?php echo $this->cal_id; ?>">
 			<?php echo $this->output_cal_header(); ?>
 			<?php echo $this->output_cal_weekdays(); ?>
 			
@@ -424,50 +487,9 @@ class JCE_Calendar{
 						<?php endif; ?>
 						</span>
 						<?php 
-						if($this->inline_events == true && isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
 
-							// display events with links
-							echo '<ul>'."\n";
-							foreach($sorted_events[$tile] as $e){
-
-								$temp = array();
-								$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
-								foreach($post_event_cals as $event){
-									$temp[] = $event->slug;
-								}
-
-								if(is_admin()){
-									echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'.get_edit_post_link($e['id'] ) .'">'.$e['title'].'</a></li>'."\n";
-								}else{
-									echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";
-								}
-								
-							}
-							echo '</ul>'."\n";
-						}elseif($this->inline_events == false && isset($sorted_events[$tile]) && !empty($sorted_events[$tile]) && $curr_month == true){
-							
-							// display calendar counters
-							$cals = array();
-							echo '<ul>'."\n";
-							foreach($sorted_events[$tile] as $e){
-
-								$temp = array();
-								$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
-								foreach($post_event_cals as $event){
-									$temp[] = $event->slug;
-									if(!isset($cals[$event->slug])){
-										$cals[$event->slug] = 1;
-									}else{
-										$cals[$event->slug]++;
-									}
-								}
-							}
-
-							foreach($cals as $k => $cal){
-								echo '<li class="event-list '.$k.'">'.$cal.'</li>'."\n";
-							}
-							echo '</ul>'."\n";
-						}
+						$events = isset($sorted_events[$tile]) ? $sorted_events[$tile] : array();
+						do_action('jce/output_tile', $tile, $events, $curr_month);
 						?>
 						</div><!-- .cal-day-wrapper -->
 					</div><!-- /.cal-day -->
@@ -476,6 +498,9 @@ class JCE_Calendar{
 			
 		</div><!-- /.cal -->
 		<?php
+
+		remove_action('jce/output_tile', array( $this, 'output_inline_events'), 10, 3);
+		remove_action('jce/output_tile', array( $this, 'output_grouped_events'), 10, 3);
 	}
 
 }

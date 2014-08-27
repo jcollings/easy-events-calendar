@@ -3,7 +3,7 @@ jQuery(document).ready(function($) {
 	
 	
 
-	$('.cal .current-month').click(function(){
+	$('.cal.no-inline-events .current-month').click(function(){
 
 		$('#daily_ajax_response').html('<p>Loading Events</p>');
 
