@@ -21,6 +21,7 @@ class JCE_Templates{
 		if(JCE()->disable_css || is_admin())
 			return;
 
+		wp_enqueue_style( 'jce-font-awsome', '//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' );
 		wp_enqueue_style('jce-skeleton', JCE()->plugin_url . 'assets/css/skeleton.css');
 	}
 

@@ -3,7 +3,7 @@ get_header(); ?>
 
 <?php do_action('before_theme_content'); ?>
 
-<?php do_action( 'jce/before_event_calendar' );; ?>
+<?php do_action( 'jce/before_event_calendar' ); ?>
 
 <?php 
 global $wp_query;

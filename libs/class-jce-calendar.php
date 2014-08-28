@@ -451,7 +451,13 @@ class JCE_Calendar{
 
 		</style>
 		<div class="cal<?php if($this->inline_events == true): ?> inline-events<?php else: ?> no-inline-events<?php endif; ?>" id="<?php echo $this->cal_id; ?>">
-			<?php echo $this->output_cal_header(); ?>
+			<?php 
+			// todo: temp fix to show headings in admin calendar
+			if(is_admin() && !defined( 'DOING_AJAX' )){
+				echo $this->output_cal_header(); 	
+			}
+			?>
+			
 			<?php echo $this->output_cal_weekdays(); ?>
 			
 			<?php foreach($this->cal_tiles as $tile): ?>

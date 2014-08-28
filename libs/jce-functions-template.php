@@ -185,29 +185,24 @@ function jce_add_event_meta(){
 	<div class="jce-event-meta">
 		<?php
 		if($start_date != $end_date){
-			echo "<p>".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('jS F Y g:i a', false)."</p>";
+			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('jS F Y g:i a', false)."</span>";
 		}else{
-			echo "<p>".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</p>";
+			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</span>";
 		}
 		?>
 		
+		<span><i class="fa fa-tag"></i> Tags</span>
+		<span><i class="fa fa-location-arrow"></i> <?php jce_event_venue_meta(); ?></span>
+		<span><i class="fa fa-user"></i> <?php jce_event_organiser_meta(); ?></span>
 	</div>
 	<?php
 }
 
-add_filter( 'jce/event_title', 'jce_update_event_title' );
-function jce_update_event_title($title){
-
-	$start_date = jce_event_start_date('jS', false);
-	$end_date = jce_event_end_date('jS', false);
-
-	if($start_date != $end_date){
-		$title .= sprintf(": (%s - %s)", $start_date, $end_date);
-	}else{
-		$title .= sprintf(": %s", $start_date);
-	}
-
-	return $title;
+add_action( 'jce/event_footer', 'jce_add_event_footer', 20 );
+function jce_add_event_footer(){
+	?>
+	<a href="<?php the_permalink(); ?>">Read more</a>
+	<?php
 }
 
 /**
@@ -246,6 +241,7 @@ function jce_after_event_archive(){
 /**
  * Display monthly title in archive only
  */
+add_action('jce/before_event_calendar', 'jce_output_monthly_archive_heading');
 function jce_output_monthly_archive_heading(){
 
 	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');

@@ -7,13 +7,12 @@
 	</header>
 
 	<div class="jce-event-content">
+		<?php do_action('jce/event_content'); ?>
 		<?php the_excerpt(); ?>
 	</div>
 
 	<footer class="jce-event-footer">
-		<div class="jce-event-meta">
-			<?php // var_dump(JCE()->event->get_post_meta()); ?>
-		</div>
+		<?php do_action('jce/event_footer'); ?>
 	</footer>
 
 </article>

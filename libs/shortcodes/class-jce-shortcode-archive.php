@@ -81,7 +81,7 @@ class JCE_Shortcode_Archive{
 			break;
 			case 'archive':
 				if(intval($day) > 0){
-					add_action('jce/before_event_archive', 'jce_output_daily_archive_heading');
+					// add_action('jce/before_event_archive', 'jce_output_daily_archive_heading');
 					$events = JCE()->query->get_daily_events($day, $month, $year);
 				}else{
 					add_action('jce/before_event_archive', 'jce_output_monthly_archive_heading');
@@ -114,7 +114,7 @@ class JCE_Shortcode_Archive{
 			<?php do_action( 'jce/after_event_loop' ); ?>
 
 		<?php else: ?>
-			<p>No Events have been found</p>
+			<article class="jce-event"><p>No Events have been found</p></article>
 		<?php endif;
 
 		wp_reset_query();
