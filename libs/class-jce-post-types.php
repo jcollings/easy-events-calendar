@@ -73,7 +73,7 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => true,
+			'public'            => false,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
@@ -133,7 +133,7 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => true,
+			'public'            => false,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
@@ -169,7 +169,7 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => true,
+			'public'            => false,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
@@ -205,7 +205,7 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => true,
+			'public'            => false,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,

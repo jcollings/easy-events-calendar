@@ -258,9 +258,15 @@ function jce_output_monthly_archive_heading(){
 		$next_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month+1)));
 	}
 
-	$title = date('F Y', strtotime("$year-$month-01")); 
-
-	echo "<h2 class=\"jce-archive-title\">".$title." - [<a href=\"".$prev_link."\">&lt;</a>][<a href=\"".$next_link."\">&gt;</a>]</h2>";
+	$title = date('F, Y', strtotime("$year-$month-01")); 
+	?>
+	<div class="jce-archive-heading">
+		<h1><?php echo $title; ?></h1>
+		<a id="jce-show-filters">Show Filters</a>
+		<a id="prev-month-link" class="jce-month-link" href="<?php echo $prev_link; ?>">&lt;</a>
+		<a id="next-month-link" class="jce-month-link" href="<?php echo $next_link; ?>">&gt;</a>
+	</div>
+	<?php
 }
 
 /**
@@ -276,20 +282,20 @@ function jce_output_daily_archive_heading(){
 	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : $m;
 	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : $d;
 
-	// if(($month - 1) <= 0){
-	// 	$prev_link = add_query_arg(array('cal_year' => ($year - 1), 'cal_month' => 12));
-	// 	$next_link = add_query_arg(array('cal_year' => $year, 'cal_month' => ($month+1)));
-	// }elseif(($month + 1) > 12){
-	// 	$prev_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month-1)));
-	// 	$next_link = add_query_arg(array('cal_year' => ($year+1), 'cal_month' => (1)));
-	// }else{
-	// 	$prev_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month-1)));
-	// 	$next_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month+1)));
-	// }
-
 	$title = date('l jS, F Y', strtotime("$year-$month-$day")); 
 
 	echo "<h2 class=\"jce-archive-title\">".$title."</h2>";
+}
+
+function jce_display_upcoming_heading(){
+
+	$title = apply_filters( 'jce/archive_heading', 'Upcoming Events' );
+	?>
+	<div class="jce-archive-heading">
+		<h1><?php echo $title; ?></h1>
+		<a id="jce-show-filters">Show Filters</a>
+	</div>
+	<?php
 }
 
 /**

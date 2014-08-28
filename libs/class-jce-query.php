@@ -47,20 +47,27 @@ class JCE_Query{
 			}
 		}
 
-		if($query->is_main_query() && $query->is_post_type_archive( 'event' )){
+		if($query->is_main_query()){
 
-			// calendar or upcoming view
-			$view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
-			if($view == 'calendar'){
-				add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
-				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
-			}elseif($view == 'archive'){
-				remove_action( 'jce/before_event_content', 'jce_add_archive_month');
-				add_action('jce/before_event_archive', 'jce_output_monthly_archive_heading');
-				add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
-				remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
-			}else{
-				add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
+			// main event archive
+			if($query->is_post_type_archive( 'event' )){
+
+				// calendar or upcoming view
+				$view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
+				if($view == 'calendar'){
+					add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+					remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
+				}elseif($view == 'archive'){
+					remove_action( 'jce/before_event_content', 'jce_add_archive_month');
+					add_action('jce/before_event_archive', 'jce_output_monthly_archive_heading');
+					add_filter( 'posts_clauses', array($this, 'setup_month_query'), 10);
+					remove_action( 'jce/after_event_loop', 'jce_output_pagination' );
+				}else{
+
+					// add upcoming archive heading to events archive
+					add_action('jce/before_event_archive', 'jce_display_upcoming_heading');
+					add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
+				}
 			}
 		}
 	}

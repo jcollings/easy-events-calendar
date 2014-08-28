@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
 
 	$('.cal.no-inline-events .current-month').click(function(){
 
-		$('#daily_ajax_response').html('<p>Loading Events</p>');
+		$('#daily_ajax_response').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
 
 		var data = {
 			'action': 'get_events',
@@ -22,6 +22,10 @@ jQuery(document).ready(function($) {
 
 		return false;
 	});
-	
-	
+
+	// show and hide archive filters
+	$('.jce-archive-filters').hide();
+	$('#jce-show-filters').click(function(){
+		$('.jce-archive-filters').slideToggle();
+	});
 });
