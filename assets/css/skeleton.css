@@ -1,5 +1,5 @@
 .jce-event-archive .jce-event{
-	border: 1px solid #333;
+	border: 1px solid #EEE;
 	padding:5px 10px;
 	margin:0 0 10px;
 	font-size: 14px;
@@ -24,10 +24,12 @@
 .jce-pagination a{
 	background: #333;
 	color: #FFF;
+	text-decoration: none;
 }
 
 .jce-pagination a:hover{
 	background: #666;
+	color: #FFF;
 }
 
 .jce-pagination a, .jce-pagination span{

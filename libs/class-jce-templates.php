@@ -35,7 +35,8 @@ class JCE_Templates{
 		if(is_post_type_archive( 'event' )){
 
 			// calendar or upcoming view
-			$view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
+			// $view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
+			$view = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;
 			if($view == 'calendar'){
 				
 				// load event calendar template
