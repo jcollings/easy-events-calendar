@@ -64,6 +64,10 @@ fieldset#recurrence_fields{
 	margin-top:10px;
 }
 
+fieldset#recurrence_fields .input.radio {
+	margin-left: -115px;
+}
+
 .input.radio{
 	overflow: hidden;
 	margin:8px 0;

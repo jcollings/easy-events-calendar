@@ -27,6 +27,21 @@ class JCE_Admin_RecurringEvents{
 		$_recurrence_type = get_post_meta( $object->ID, '_recurrence_type', true );
 		$_recurrence_space = get_post_meta( $object->ID, '_recurrence_space', true );
 		$_recurrence_end = get_post_meta( $object->ID, '_recurrence_end', true );
+		$_repeat_on = get_post_meta( $object->ID, '_repeat_on', true );
+
+
+		if($_recurrence_type == 'month' && empty($_repeat_on)){
+			
+			// set detail repeating to be month
+			$_repeat_on = array('month');
+
+		}elseif($_recurrence_type == 'week' && empty($_repeat_on)){
+
+			// set default repeating to be weeks day
+			$_start_date = get_post_meta( $object->ID, '_event_start_date', true );
+			$_repeat_on = array( strtolower( date('D', strtotime($_start_date)) ) );
+		}
+		
 		?>
 		<div class="input select required">
 			<label>Recurrance:</label>
@@ -47,12 +62,49 @@ class JCE_Admin_RecurringEvents{
 					<?php endfor; ?>
 				</select> Years</p>
 			</div>
+			<div class="input radio recurrence_month recurrence_specific">
+				<?php
+				// todo: populate from saved data
+				$month_repeat_options = array(
+					'month' => 'Day of the month',
+					'week' => 'Day of the week',
+				);
+				?>
+				<label>Repeat By:</label>
+				<?php foreach($month_repeat_options as $key => $label): ?>
+				<div class="option">
+					<input type="radio" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_repeat_on][]" value="<?php echo $key; ?>" <?php if(in_array($key, $_repeat_on)): ?> checked="checked"<?php endif; ?> />
+					<label><?php echo $label; ?></label>
+				</div>
+				<?php endforeach; ?>
+			</div>
 			<div class="input select recurrence_month recurrence_specific">
 				<p>Every <select id="<?php echo $this->meta_id; ?>_recurrence_space" name="<?php echo $this->meta_id; ?>[_recurrence_month_space]">
 					<?php for($x = 1; $x <= 30; $x++): ?>
 					<option value="<?php echo $x; ?>" <?php if($_recurrence_space == $x): ?>selected="selected"<?php endif; ?>><?php echo $x; ?></option>
 					<?php endfor; ?>
 				</select> Months</p>
+			</div>
+			<div class="input radio recurrence_week recurrence_specific">
+				<?php
+				// todo: populate from saved data
+				$day_repeat_options = array(
+					'mon' => 'M',
+					'tue' => 'T',
+					'wed' => 'W',
+					'thu' => 'T',
+					'fri' => 'F',
+					'sat' => 'S',
+					'sun' => 'S',
+				);
+				?>
+				<label>Repeat On:</label>
+				<?php foreach($day_repeat_options as $key => $label): ?>
+				<div class="option">
+					<input type="checkbox" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_repeat_on][]" value="<?php echo $key; ?>" <?php if(in_array($key, $_repeat_on)): ?> checked="checked"<?php endif; ?> />
+					<label><?php echo $label; ?></label>
+				</div>
+				<?php endforeach; ?>
 			</div>
 			<div class="input select recurrence_week recurrence_specific">
 				<p>Every <select id="<?php echo $this->meta_id; ?>_recurrence_space" name="<?php echo $this->meta_id; ?>[_recurrence_week_space]">
@@ -89,9 +141,12 @@ class JCE_Admin_RecurringEvents{
 		// remove all existing recurring start dates
 		$wpdb->delete($wpdb->postmeta, array('post_id' => $event_id, 'meta_key' => '_revent_start_date'));
 
-		// add start date for every event
-		add_post_meta( $event_id, '_revent_start_date', $_POST[$this->meta_id]['_event_start_date']);
+		if(empty($_POST[$this->meta_id]['_recurrence_type']) || $_POST[$this->meta_id]['_recurrence_type'] == 'none'){
 
+			// add start date for non recurring events
+			add_post_meta( $event_id, '_revent_start_date', $_POST[$this->meta_id]['_event_start_date']);	
+		}
+		
 		$event_length = strtotime($_POST[$this->meta_id]['_event_end_date']) - strtotime($_POST[$this->meta_id]['_event_start_date']);
 		$start_day = $_POST[$this->meta_id]['_event_start_date'];
 
@@ -112,11 +167,14 @@ class JCE_Admin_RecurringEvents{
 			}
 		}
 
+		// false if not set
+		$time_of_month = false;
+
 		// add recuring event start dates
 		if(!empty($_POST[$this->meta_id]['_recurrence_type']) && $_POST[$this->meta_id]['_recurrence_type'] != 'none'){
 			$ocurrences = intval($_POST[$this->meta_id]['_recurrence_end']);
 
-			for($i=1; $i < $ocurrences; $i++){
+			for($i=0; $i < $ocurrences; $i++){
 
 				$rec = $i * $_POST[$this->meta_id]['_recurrence_space'];
 
@@ -125,17 +183,85 @@ class JCE_Admin_RecurringEvents{
 						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' year'));
 					break;
 					case 'month':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' month'));
+
+						// get YYYY-MM-DD of start day
+						$current_date = date('Y-m-d', strtotime($start_day));
+
+						// repeat on
+						$repeat_on = $_POST[$this->meta_id]['_repeat_on'];
+						if(!empty($repeat_on) && isset($repeat_on[0]) && $repeat_on[0] == 'week'){
+
+							if(!$time_of_month){
+								// find out which week of the month it is in
+								
+								$current_day = date('l', strtotime($start_day));
+								$current_month_check = explode('-', $current_date);
+								
+
+								// loop through all occurances of the specified day in the month
+								$test = array('first', 'second', 'third', 'fourth', 'fifth', 'sixth');
+								foreach($test as $k => $count){
+
+									// get the weekly occurance of the specified day
+									$test_date = date('Y-m-d', strtotime($count.' '.$current_day.' of '.$current_date));
+
+									// check to see if that date is the chosen start date
+									if($test_date == $current_date){
+
+										// get next weeks occurance of the specified day
+										$next_test_date = date('Y-m-d', strtotime( ($test[$k+1]).' '.$current_day.' of '.$current_date));
+										
+										// check to see if the next date is in the same month
+										$test_month_check = explode('-', $next_test_date);
+										if($test_month_check[1] != $current_month_check[1]){
+											$time_of_month = 'last';
+											break;
+										}
+
+										$time_of_month = $count;
+										break;
+									}
+								}
+							}
+
+							// next month same day
+							$new_start_day = date('Y-m-d H:i:s', strtotime($time_of_month.' '.date('l', strtotime($start_day)).' of '.$current_date.' +'.$rec.' month'));	
+						}else{
+
+							// next month same date
+							$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' month'));	
+						}
 					break;
 					case 'week':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' week'));
+						// repeat on 
+						$repeat_on = $_POST[$this->meta_id]['_repeat_on'];
+						if(!empty($repeat_on)){
+
+							$new_start_day = array();
+							foreach($repeat_on as $day){
+								$new_start_day[] = date('Y-m-d H:i:s', strtotime($start_day .' + '.$rec.' '.$day));
+							}
+						}else{
+							$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' week'));	
+						}
 					break;
 					case 'day':
 						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' day'));
 					break;
 				}
 
-				add_post_meta( $event_id, '_revent_start_date', $new_start_day);
+				if(is_array($new_start_day)){
+					
+					$temp = '';
+					foreach($new_start_day as $date){
+						$temp = $date;
+						add_post_meta( $event_id, '_revent_start_date', $temp);		
+					}
+					$new_start_day = $date;
+				}else{
+					add_post_meta( $event_id, '_revent_start_date', $new_start_day);	
+				}
+				
 			}
 		}
 
@@ -143,7 +269,8 @@ class JCE_Admin_RecurringEvents{
 			'_recurrence_type',
 			'_recurrence_space',
 			'_recurrence_end',
-			'_event_length'
+			'_event_length',
+			'_repeat_on'
 		);
 
 		// set event length for checking end date on recurring events
