@@ -416,6 +416,10 @@ function jce_output_event_filters(){
 		$categories[$x->slug] = $x->name;
 	}
 
+	// todo: doesn't follow passed shortcode arguments
+	$month = get_query_var('cal_month') ? get_query_var('cal_month') : date('m');
+	$year = get_query_var('cal_year') ? get_query_var('cal_year') : date('Y');
+
 	?>
 	<div class="jce-archive-filters">
 		<form action="#" method="GET">
@@ -425,6 +429,10 @@ function jce_output_event_filters(){
 			<?php elseif(!get_option('permalink_structure') && is_page()): ?>
 			<input type="hidden" name="page_id" value="<?php echo get_query_var('page_id'); ?>" />
 			<?php endif; ?>
+
+			<input type="hidden" name="cal_month" value="<?php echo $month; ?>" />
+			<input type="hidden" name="cal_year" value="<?php echo $year; ?>" />
+
 
 			<div class="input select">
 				<label for="event_venue">Venue</label>

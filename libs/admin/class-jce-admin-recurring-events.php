@@ -64,7 +64,6 @@ class JCE_Admin_RecurringEvents{
 			</div>
 			<div class="input radio recurrence_month recurrence_specific">
 				<?php
-				// todo: populate from saved data
 				$month_repeat_options = array(
 					'month' => 'Day of the month',
 					'week' => 'Day of the week',
@@ -87,7 +86,6 @@ class JCE_Admin_RecurringEvents{
 			</div>
 			<div class="input radio recurrence_week recurrence_specific">
 				<?php
-				// todo: populate from saved data
 				$day_repeat_options = array(
 					'mon' => 'M',
 					'tue' => 'T',
