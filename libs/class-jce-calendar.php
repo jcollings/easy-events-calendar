@@ -436,6 +436,13 @@ class JCE_Calendar{
 			background-image: linear-gradient(top, #e6e6e6, #f4f4f4);
 		}
 
+		.cal .current-day, .cal .current-day:hover{
+			background: #333;
+		}
+		.cal .current-day .date a{
+			color: #FFF;
+		}
+
 		<?php 
 		$cal_terms = get_terms( 'event_calendar', array('hide_empty' => false) );
 
@@ -479,6 +486,11 @@ class JCE_Calendar{
 					$classes[] = 'prev-next';
 				}else{
 					$classes[] = 'current-month';
+
+					// add class to current day
+					if(sprintf("%d-%d-%d", $this->year, $this->month, $tile) == date('Y-n-j') ){
+						$classes[] = 'current-day';
+					}
 				}
 				?>
 

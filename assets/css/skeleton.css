@@ -114,3 +114,60 @@ a#jce-show-filters:hover{
 .jce-event a, .jce-event a:visited, a#jce-show-filters, a#jce-show-filters:visited{
 	color: #21759b !important;
 }
+
+/**
+ * Single Event
+ */
+.jce-two-cols{
+	width: 100%;
+	overflow: hidden;
+}
+
+.jce-two-cols .jce-one-col{
+	width: 50%;
+}
+
+.jce-one-col, .jce-two-col{
+	float:left;
+}
+
+.jce-three-cols{
+	width: 100%;
+	overflow: hidden;
+}
+
+.jce-three-cols .jce-one-col{
+	width: 33%;
+}
+
+.jce-three-cols .jce-two-col{
+	width: 66%;
+}
+
+.jce-three-cols .jce-event-meta span{
+	display: block;
+}
+
+.jce-single-event h2 {
+    font-size: 16px;
+    line-height: 28px;
+}
+
+.jce-single-event p{
+    line-height: 20px
+}
+
+.jce-meta-title{
+	font-weight: bold;
+}
+
+.jce-event .jce-event-title{
+	font-size: 18px;
+	line-height: 28px;
+}
+
+
+.jce-single-event .jce-event-title{
+	font-size: 28px;
+	line-height: 40px;
+}

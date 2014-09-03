@@ -431,10 +431,8 @@ class JCE_Admin_PostTypes{
 	public function admin_columns_content( $column ) {
 		global $post;
 
-		$event = JCE()->event;
-		if(!$event){
-			JCE()->event = new JCE_Event($post);
-		}
+		// setup event
+		JCE()->event = new JCE_Event($post);
 
 		switch ( $column ) {
 			case 'event_start':

@@ -175,7 +175,6 @@ function jce_add_event_title(){
 }
 
 // Add event meta to event
-add_action( 'jce/single_event_header', 'jce_add_event_meta', 20 );
 add_action( 'jce/event_header', 'jce_add_event_meta', 20 );
 function jce_add_event_meta(){
 
@@ -190,10 +189,6 @@ function jce_add_event_meta(){
 			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</span>";
 		}
 		?>
-		
-		<span><i class="fa fa-tag"></i> Tags</span>
-		<span><i class="fa fa-location-arrow"></i> <?php jce_event_venue_meta(); ?></span>
-		<span><i class="fa fa-user"></i> <?php jce_event_organiser_meta(); ?></span>
 	</div>
 	<?php
 }
@@ -309,6 +304,26 @@ function jce_output_pagination(){
 /**
  * Single Event content
  */
+
+// add single event date to header
+add_action( 'jce/single_event_header', 'jce_add_event_date', 20 );
+function jce_add_event_date(){
+
+	$start_date = jce_event_start_date('jS', false);
+	$end_date = jce_event_end_date('jS', false);
+	?>
+	<div class="jce-event-meta">
+		<?php
+		if($start_date != $end_date){
+			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('jS F Y g:i a', false)."</span>";
+		}else{
+			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</span>";
+		}
+		?>
+	</div>
+	<?php
+}
+
 add_action('jce/single_event_content', 'jce_add_single_event_content', 10);
 function jce_add_single_event_content(){
 	?>
@@ -319,30 +334,69 @@ function jce_add_single_event_content(){
 	<?php
 }
 
-add_action('jce/single_event_content', 'jce_add_single_event_venue', 15);
-function jce_add_single_event_venue(){
+add_action('jce/single_event_content', 'jce_add_single_event_image', 8);
+function jce_add_single_event_image(){
+	global $post;
+	$attachment_id = get_post_thumbnail_id($post->ID);
+	
+	if(!$attachment_id)
+		return;
+
+	$image_size = apply_filters( 'jce/single_image_size', 'full');
+	$src = wp_get_attachment_image_src( $attachment_id, $image_size);
 	?>
-	<div clas="jce-event-venue">
-		<h2>Venue</h2>
-		<p>Name: <?php jce_event_venue_meta(); ?><br />
-		Address: <?php jce_event_venue_meta('address'); ?><br />
-		City: <?php jce_event_venue_meta('city'); ?><br />
-		Postcode: <?php jce_event_venue_meta('postcode'); ?></p>
+	<div class="jce-event-image">
+		<img src="<?php echo $src[0]; ?>" title="<?php echo get_the_title($attachment_id ); ?>" alt="<?php echo get_the_title($attachment_id ); ?>" width="100%" />
 	</div>
 	<?php
 }
 
-add_action('jce/single_event_content', 'jce_add_single_event_organiser', 15);
+add_action('jce/single_event_content', 'jce_add_single_event_venue', 15);
+function jce_add_single_event_venue(){
+	?>
+	<div class="jce-two-cols">
+		<div class="jce-event-venue jce-one-col">
+			<h2>Venue</h2>
+			<p><span class="jce-meta-title">Name:</span> <?php jce_event_venue_meta(); ?><br />
+			<span class="jce-meta-title">Address:</span> <?php jce_event_venue_meta('address'); ?><br />
+			<span class="jce-meta-title">City:</span> <?php jce_event_venue_meta('city'); ?><br />
+			<span class="jce-meta-title">Postcode:</span> <?php jce_event_venue_meta('postcode'); ?></p>
+		</div>
+	<?php
+}
+
+add_action('jce/single_event_content', 'jce_add_single_event_organiser', 16);
 function jce_add_single_event_organiser(){
 	?>
-	<div clas="jce-event-organiser">
-		<h2>Organiser</h2>
-		<p>Name: <?php jce_event_organiser_meta(); ?><br />
-		Phone: <?php jce_event_organiser_meta('phone'); ?><br />
-		Email: <?php jce_event_organiser_meta('email'); ?><br />
-		Website: <?php jce_event_organiser_meta('website'); ?></p>
+		<div class="jce-event-organiser jce-one-col">
+			<h2>Organiser</h2>
+			<p><span class="jce-meta-title">Name:</span> <?php jce_event_organiser_meta(); ?><br />
+			<span class="jce-meta-title">Phone:</span> <?php jce_event_organiser_meta('phone'); ?><br />
+			<span class="jce-meta-title">Email:</span> <?php jce_event_organiser_meta('email'); ?><br />
+			<span class="jce-meta-title">Website:</span> <?php jce_event_organiser_meta('website'); ?></p>
+		</div>
 	</div>
 	<?php
+}
+
+add_action('jce/single_event_content', 'jce_add_single_event_footer_meta', 20);
+function jce_add_single_event_footer_meta(){
+	
+	global $post;
+	$tags = wp_get_object_terms( $post->ID, 'event_tag', array('fields' => 'names') );
+	$categories = wp_get_object_terms( $post->ID, 'event_category', array('fields' => 'names') );
+	?>
+	<?php 
+	// output event tags
+	if($tags): ?>
+	<p><span class="jce-meta-title"><i class="fa fa-bookmark"></i> Tagged:</span> <?php echo implode(', ', $tags); ?></p>
+	<?php endif; ?>
+
+	<?php 
+	// output event categories
+	if($categories): ?>
+	<p><span class="jce-meta-title"><i class="fa fa-tag"></i> Categories:</span> <?php echo implode(', ', $categories); ?></p>
+	<?php endif;
 }
 
 add_action('jce/before_event_loop', 'jce_add_single_back_btn');
@@ -419,6 +473,7 @@ function jce_output_event_filters(){
 	// todo: doesn't follow passed shortcode arguments
 	$month = get_query_var('cal_month') ? get_query_var('cal_month') : date('m');
 	$year = get_query_var('cal_year') ? get_query_var('cal_year') : date('Y');
+	$view = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;
 
 	?>
 	<div class="jce-archive-filters">
@@ -432,6 +487,7 @@ function jce_output_event_filters(){
 
 			<input type="hidden" name="cal_month" value="<?php echo $month; ?>" />
 			<input type="hidden" name="cal_year" value="<?php echo $year; ?>" />
+			<input type="hidden" name="view" value="<?php echo $view; ?>" />
 
 
 			<div class="input select">
