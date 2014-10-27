@@ -236,6 +236,7 @@ function jce_after_event_archive(){
 /**
  * Display monthly title in archive only
  */
+add_action('jce/widget/before_event_calendar', 'jce_output_monthly_archive_heading');
 add_action('jce/before_event_calendar', 'jce_output_monthly_archive_heading');
 function jce_output_monthly_archive_heading(){
 
@@ -254,6 +255,8 @@ function jce_output_monthly_archive_heading(){
 	}
 
 	$title = date('F, Y', strtotime("$year-$month-01")); 
+	// var_dump($title);
+	// 
 	?>
 	<div class="jce-archive-heading">
 		<h1><?php echo $title; ?></h1>
@@ -429,6 +432,24 @@ function jce_output_daily_archive(){
 
 	// re-add event archive
 	add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
+}
+
+add_action('jce/widget/after_event_calendar', 'jce_output_widget_daily_archive');
+function jce_output_widget_daily_archive(){
+
+	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');
+	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
+	$day = get_query_var( 'cal_day' ) ? get_query_var( 'cal_day' ) : date('d');
+
+	// remove event archive
+	// remove_action('jce/before_event_archive', 'jce_output_event_filters', 11);
+
+	echo "<div id=\"daily_ajax_response\">";
+	echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" widget="1" /]' );	
+	echo "</div>";
+
+	// re-add event archive
+	// add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
 }
 
 add_action('jce/before_event_calendar', 'jce_output_event_filters', 11);

@@ -39,6 +39,12 @@ class JCE_Shortcode_Archive{
 			$wp_query->set('event_category', $temp['event_category']);
 		}
 
+		// check to see if in widget or not
+		$widget = 0;
+		if(isset($temp['widget']) && $temp['widget'] == 1){
+			$widget = 1;
+		}
+
 		if(!empty($temp) && isset($temp['cal_month']) && isset($temp['cal_year'])){
 
 			$year = $temp['cal_year'];
@@ -52,11 +58,11 @@ class JCE_Shortcode_Archive{
 
 				// output daily archive shortcode
 				$day = $temp['cal_day'];
-				echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" /]' );	
+				echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" day="'.$day.'" widget="'.$widget.'" /]' );	
 			}else{
 
 				// output monthly archive
-				echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" /]' );	
+				echo do_shortcode('[jce_event_archive view="archive" year="'.$year.'" month="'.$month.'" widget="'.$widget.'" /]' );	
 			}
 
 			// re-add event archive
@@ -72,7 +78,8 @@ class JCE_Shortcode_Archive{
 			'view' => 'upcoming',
 			'month' => date('m'),
 			'year' => date('Y'),
-			'day' => false
+			'day' => false,
+			'widget' => false
 		), $atts, 'jce_event_archive' ) );
 
 		switch($view){
@@ -96,7 +103,8 @@ class JCE_Shortcode_Archive{
 
 		ob_start();
 
-		do_action( 'jce/before_event_archive' );
+		if(!$widget)
+			do_action( 'jce/before_event_archive' );
 
 		global $wp_query;
 		$wp_query = $events;
@@ -107,7 +115,13 @@ class JCE_Shortcode_Archive{
 
 			<?php while(have_posts()): the_post(); ?>
 
-				<?php jce_get_template_part('content-event'); ?>
+				<?php
+				if($widget){
+					jce_get_template_part('content-event-widget');
+				}else{
+					jce_get_template_part('content-event');	
+				}
+				?>
 				
 			<?php endwhile; ?>
 
@@ -119,7 +133,8 @@ class JCE_Shortcode_Archive{
 
 		wp_reset_query();
 
-		do_action( 'jce/after_event_archive' );
+		if(!$widget)
+			do_action( 'jce/after_event_archive' );
 
 		$output = ob_get_contents();
 		ob_end_clean();

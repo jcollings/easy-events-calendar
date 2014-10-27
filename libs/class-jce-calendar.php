@@ -27,9 +27,10 @@ class JCE_Calendar{
 	var $next_month_link = '&gt;';
 	var $inline_events = false;
 	var $cal_id = 'cal';
+	var $widget = false;
 
 	function __construct(){
-		if(is_admin()){
+		if(is_admin() || !defined( 'DOING_AJAX' )){
 			$this->inline_events = true;
 		}
 	}
@@ -322,7 +323,7 @@ class JCE_Calendar{
 		echo '</ul>'."\n";
 	}
 
-	function render($events = array()){
+	function render($events = array(), $args = array()){
 
 		if($this->inline_events){
 			add_action('jce/output_tile', array( $this, 'output_inline_events'), 10, 3);
@@ -330,6 +331,8 @@ class JCE_Calendar{
 			add_action('jce/output_tile', array( $this, 'output_grouped_events'), 10, 3);
 		}
 
+		$output_css = true;
+		$headings = true;
 		$row_counter = 0;
 		$curr_month = false; // true if tile is in the current month
 		$events = $this->generate_event_list($events);
@@ -339,6 +342,22 @@ class JCE_Calendar{
 				$sorted_events[$e['days']][] = $e;
 			}
 		}
+
+		//  disable css output
+		if(isset($args['output_css']) && $args['output_css'] == false){
+			$output_css = false;
+		}
+
+		// disable headings
+		if(isset($args['headings']) && $args['headings'] == false){
+			$headings = false;
+		}
+
+		if(isset($args['widget']) && $args['widget'] == true){
+			$this->widget = true;
+		}
+
+		if($output_css):
 		?>
 		<style type="text/css">
 
@@ -444,6 +463,8 @@ class JCE_Calendar{
 		}
 
 		<?php 
+		
+	
 		$cal_terms = get_terms( 'event_calendar', array('hide_empty' => false) );
 
 		if($cal_terms){
@@ -457,15 +478,22 @@ class JCE_Calendar{
 		?>
 
 		</style>
-		<div class="cal<?php if($this->inline_events == true): ?> inline-events<?php else: ?> no-inline-events<?php endif; ?>" id="<?php echo $this->cal_id; ?>">
+		<?php
+		endif;
+		?>
+		<div class="cal<?php if($this->inline_events == true): ?> inline-events<?php else: ?> no-inline-events<?php endif; ?>" id="<?php echo $this->cal_id; ?>" data-cal-month="<?php echo $this->month; ?>" data-cal-year="<?php echo $this->year; ?>">
 			<?php 
-			// todo: temp fix to show headings in admin calendar
-			if(is_admin() && !defined( 'DOING_AJAX' )){
-				echo $this->output_cal_header(); 	
+
+			if($headings){
+				
+				// todo: temp fix to show headings in admin calendar
+				if(is_admin() && !defined( 'DOING_AJAX' )){
+					echo $this->output_cal_header(); 	
+				}
+
+				echo $this->output_cal_weekdays(); 
 			}
 			?>
-			
-			<?php echo $this->output_cal_weekdays(); ?>
 			
 			<?php foreach($this->cal_tiles as $tile): ?>
 				<?php $row_counter++; ?>
@@ -499,7 +527,7 @@ class JCE_Calendar{
 						<div class="cal-day-wrapper">
 						<span class="date" title="">
 						<?php if($curr_month == true): ?>
-							<a href="<?php echo add_query_arg(array( 'cal_day' => $tile, 'cal_month' => $this->month, 'cal_year' => $this->year)); ?>#<?php echo $this->cal_id; ?>"><?php echo $tile; ?></a>
+							<a href="<?php echo add_query_arg(array( 'cal_day' => $tile, 'cal_month' => $this->month, 'cal_year' => $this->year, 'widget' => $this->widget)); ?>#<?php echo $this->cal_id; ?>"><?php echo $tile; ?></a>
 						<?php else: ?>
 							<?php echo $tile; ?>
 						<?php endif; ?>

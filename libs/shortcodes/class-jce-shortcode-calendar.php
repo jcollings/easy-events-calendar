@@ -32,6 +32,7 @@ class JCE_Shortcode_Calendar{
 		$events = JCE()->query->get_calendar($month, $year);
 
 		$calendar = new JCE_Calendar();
+		$calendar->inline_events = false;
 		$calendar->set_week_start('Mon');
 		$calendar->set_month($year, $month);
 		$calendar->render($events->posts);

@@ -40,6 +40,8 @@ class JCE_Admin_RecurringEvents{
 			// set default repeating to be weeks day
 			$_start_date = get_post_meta( $object->ID, '_event_start_date', true );
 			$_repeat_on = array( strtolower( date('D', strtotime($_start_date)) ) );
+		}else{
+			$_repeat_on = array();
 		}
 		
 		?>

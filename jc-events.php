@@ -72,6 +72,9 @@ class JCEvents2 {
 		include_once 'libs/shortcodes/class-jce-shortcode-archive.php';
 		include_once 'libs/shortcodes/class-jce-shortcode-calendar.php';
 
+		// widgets
+		include_once 'libs/widgets/class-jce-widget-calendar.php';
+
 		// functions
 		include_once 'libs/jce-functions-general.php';
 		include_once 'libs/jce-functions-template.php';
