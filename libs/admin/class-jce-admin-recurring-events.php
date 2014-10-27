@@ -40,8 +40,6 @@ class JCE_Admin_RecurringEvents{
 			// set default repeating to be weeks day
 			$_start_date = get_post_meta( $object->ID, '_event_start_date', true );
 			$_repeat_on = array( strtolower( date('D', strtotime($_start_date)) ) );
-		}else{
-			$_repeat_on = array();
 		}
 		
 		?>
@@ -74,7 +72,7 @@ class JCE_Admin_RecurringEvents{
 				<label>Repeat By:</label>
 				<?php foreach($month_repeat_options as $key => $label): ?>
 				<div class="option">
-					<input type="radio" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_repeat_on][]" value="<?php echo $key; ?>" <?php if(in_array($key, $_repeat_on)): ?> checked="checked"<?php endif; ?> />
+					<input type="radio" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_repeat_on][]" value="<?php echo $key; ?>" <?php if(is_array($_repeat_on) && in_array($key, $_repeat_on)): ?> checked="checked"<?php endif; ?> />
 					<label><?php echo $label; ?></label>
 				</div>
 				<?php endforeach; ?>
@@ -101,7 +99,7 @@ class JCE_Admin_RecurringEvents{
 				<label>Repeat On:</label>
 				<?php foreach($day_repeat_options as $key => $label): ?>
 				<div class="option">
-					<input type="checkbox" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_repeat_on][]" value="<?php echo $key; ?>" <?php if(in_array($key, $_repeat_on)): ?> checked="checked"<?php endif; ?> />
+					<input type="checkbox" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_repeat_on][]" value="<?php echo $key; ?>" <?php if(is_array($_repeat_on) && in_array($key, $_repeat_on)): ?> checked="checked"<?php endif; ?> />
 					<label><?php echo $label; ?></label>
 				</div>
 				<?php endforeach; ?>
@@ -174,7 +172,7 @@ class JCE_Admin_RecurringEvents{
 		if(!empty($_POST[$this->meta_id]['_recurrence_type']) && $_POST[$this->meta_id]['_recurrence_type'] != 'none'){
 			$ocurrences = intval($_POST[$this->meta_id]['_recurrence_end']);
 
-			for($i=0; $i < $ocurrences; $i++){
+			for($i=1; $i < $ocurrences; $i++){
 
 				$rec = $i * $_POST[$this->meta_id]['_recurrence_space'];
 
@@ -234,7 +232,7 @@ class JCE_Admin_RecurringEvents{
 					break;
 					case 'week':
 						// repeat on 
-						$repeat_on = $_POST[$this->meta_id]['_repeat_on'];
+						$repeat_on = isset($_POST[$this->meta_id]['_repeat_on']) ? $_POST[$this->meta_id]['_repeat_on'] : array();
 						if(!empty($repeat_on)){
 
 							$new_start_day = array();
