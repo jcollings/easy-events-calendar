@@ -103,11 +103,14 @@ class JCE_Shortcode_Archive{
 
 		ob_start();
 
-		if(!$widget)
-			do_action( 'jce/before_event_archive' );
-
 		global $wp_query;
 		$wp_query = $events;
+
+		if($widget){
+			do_action( 'jce/widget/before_event_archive');
+		}else{
+			do_action( 'jce/before_event_archive' );
+		}		
 
 		if(have_posts()): ?>
 
@@ -133,8 +136,11 @@ class JCE_Shortcode_Archive{
 
 		wp_reset_query();
 
-		if(!$widget)
+		if($widget){
+			do_action( 'jce/widget/after_event_archive' );
+		}else{
 			do_action( 'jce/after_event_archive' );
+		}
 
 		$output = ob_get_contents();
 		ob_end_clean();

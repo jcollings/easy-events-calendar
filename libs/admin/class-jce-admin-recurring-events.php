@@ -139,11 +139,11 @@ class JCE_Admin_RecurringEvents{
 		// remove all existing recurring start dates
 		$wpdb->delete($wpdb->postmeta, array('post_id' => $event_id, 'meta_key' => '_revent_start_date'));
 
-		if(empty($_POST[$this->meta_id]['_recurrence_type']) || $_POST[$this->meta_id]['_recurrence_type'] == 'none'){
+		// if(empty($_POST[$this->meta_id]['_recurrence_type']) || $_POST[$this->meta_id]['_recurrence_type'] === 'none'){
 
 			// add start date for non recurring events
 			add_post_meta( $event_id, '_revent_start_date', $_POST[$this->meta_id]['_event_start_date']);	
-		}
+		// }
 		
 		$event_length = strtotime($_POST[$this->meta_id]['_event_end_date']) - strtotime($_POST[$this->meta_id]['_event_start_date']);
 		$start_day = $_POST[$this->meta_id]['_event_start_date'];
@@ -169,16 +169,24 @@ class JCE_Admin_RecurringEvents{
 		$time_of_month = false;
 
 		// add recuring event start dates
-		if(!empty($_POST[$this->meta_id]['_recurrence_type']) && $_POST[$this->meta_id]['_recurrence_type'] != 'none'){
+		if(!empty($_POST[$this->meta_id]['_recurrence_type']) && $_POST[$this->meta_id]['_recurrence_type'] !== 'none'){
 			$ocurrences = intval($_POST[$this->meta_id]['_recurrence_end']);
 
-			for($i=1; $i < $ocurrences; $i++){
+			// store all created dates in the format Y-m-d
+			$processed_event_dates = array(
+				date('Y-m-d', strtotime($start_day))
+			);
+
+			$test_event_dates = array($start_day);
+
+			for($i=0; $i < $ocurrences; $i++){
 
 				$rec = $i * $_POST[$this->meta_id]['_recurrence_space'];
 
 				switch($_POST[$this->meta_id]['_recurrence_type']){
 					case 'year':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' year'));
+						// $new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' year'));
+						$new_start_day = date('Y-m-d', strtotime($start_day.' + '.$rec.' year')). ' ' .date('H:i:s', strtotime($start_day));
 					break;
 					case 'month':
 
@@ -223,11 +231,13 @@ class JCE_Admin_RecurringEvents{
 							}
 
 							// next month same day
-							$new_start_day = date('Y-m-d H:i:s', strtotime($time_of_month.' '.date('l', strtotime($start_day)).' of '.$current_date.' +'.$rec.' month'));	
+							// $new_start_day = date('Y-m-d H:i:s', strtotime($time_of_month.' '.date('l', strtotime($start_day)).' of '.$current_date.' +'.$rec.' month'));	
+							$new_start_day = date('Y-m-d', strtotime($time_of_month.' '.date('l', strtotime($start_day)).' of '.$current_date.' +'.$rec.' month')) . ' ' .date('H:i:s', strtotime($start_day));
 						}else{
 
 							// next month same date
-							$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' month'));	
+							// $new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' month'));	
+							$new_start_day = date('Y-m-d', strtotime($start_day.' + '.$rec.' month')) . ' ' .date('H:i:s', strtotime($start_day));	
 						}
 					break;
 					case 'week':
@@ -237,27 +247,47 @@ class JCE_Admin_RecurringEvents{
 
 							$new_start_day = array();
 							foreach($repeat_on as $day){
-								$new_start_day[] = date('Y-m-d H:i:s', strtotime($start_day .' + '.$rec.' '.$day));
+								// $new_start_day[] = date('Y-m-d H:i:s', strtotime($start_day .' + '.$rec.' '.$day));
+
+								// test
+								$new_start_day[] = date('Y-m-d', strtotime($start_day .' + '.$rec.' '.$day)) . ' ' .date('H:i:s', strtotime($start_day));
 							}
 						}else{
-							$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' week'));	
+							// $new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' week'));	
+							// test
+							$new_start_day[] = date('Y-m-d', strtotime($start_day .' + '.$rec.' week')) . ' ' .date('H:i:s', strtotime($start_day));
 						}
 					break;
 					case 'day':
-						$new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' day'));
+						// $new_start_day = date('Y-m-d H:i:s', strtotime($start_day.' + '.$rec.' day'));
+						$new_start_day = date('Y-m-d', strtotime($start_day.' + '.$rec.' day')) . ' ' .date('H:i:s', strtotime($start_day));
 					break;
 				}
 
 				if(is_array($new_start_day)){
+
+					// remove duplicate entries
+					$new_start_day = array_unique($new_start_day);
 					
-					$temp = '';
 					foreach($new_start_day as $date){
-						$temp = $date;
-						add_post_meta( $event_id, '_revent_start_date', $temp);		
+
+						$y_date = date('Y-m-d', strtotime($date));
+
+						if(!in_array($y_date, $processed_event_dates)){
+							$processed_event_dates[] = $y_date;
+							$test_event_dates[] = $date;
+							add_post_meta( $event_id, '_revent_start_date', $date);		
+						}
 					}
-					$new_start_day = $date;
 				}else{
-					add_post_meta( $event_id, '_revent_start_date', $new_start_day);	
+
+					$y_date = date('Y-m-d', strtotime($new_start_day));
+
+					if(!in_array($y_date, $processed_event_dates)){					
+						$processed_event_dates[] = $y_date;
+						$test_event_dates[] = $new_start_day;
+						add_post_meta( $event_id, '_revent_start_date', $new_start_day);	
+					}
 				}
 				
 			}

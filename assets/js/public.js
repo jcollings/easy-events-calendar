@@ -2,31 +2,31 @@
 jQuery(document).ready(function($) {
 	
 	// load currently selected days events
-	$('.cal.no-inline-events .current-month').click(function(){
+	// $('.cal.no-inline-events .current-month').click(function(){
 
-		$('#daily_ajax_response').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
+	// 	$('#daily_ajax_response').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
 
 
-		// console.log($(this).parentsUntil('.widget').html());
+	// 	// console.log($(this).parentsUntil('.widget').html());
 
-		var url = $(this).find('a').attr('href');
-		// url = url.replace('#', '&widget=1#');
+	// 	var url = $(this).find('a').attr('href');
+	// 	// url = url.replace('#', '&widget=1#');
 
-		var data = {
-			'action': 'get_events',
-			'url': url
-			// 'whatever': ajax_object.we_value      // We pass php values differently!
-		};
+	// 	var data = {
+	// 		'action': 'get_events',
+	// 		'url': url
+	// 		// 'whatever': ajax_object.we_value      // We pass php values differently!
+	// 	};
 		
-		// We can also pass the url value separately from ajaxurl for front end AJAX implementations
-		jQuery.post(ajax_object.ajax_url, data, function(response) {
+	// 	// We can also pass the url value separately from ajaxurl for front end AJAX implementations
+	// 	jQuery.post(ajax_object.ajax_url, data, function(response) {
 
-			$('#daily_ajax_response').html(response);
-			// alert('Got this from the server: ' + response);
-		});
+	// 		$('#daily_ajax_response').html(response);
+	// 		// alert('Got this from the server: ' + response);
+	// 	});
 
-		return false;
-	});
+	// 	return false;
+	// });
 
 
 
@@ -42,6 +42,9 @@ jQuery(document).ready(function($) {
 
 		// next/prev month
 		_cal.on('click', '	.jce-month-link', function(){
+
+			_cal.find('.cal').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
+			_cal.find('#daily_ajax_response').html('');
 
 			var data = {
 				'action': 'get_cal_month',
@@ -61,6 +64,8 @@ jQuery(document).ready(function($) {
 
 		// day tile
 		_cal.on('click', '.cal.no-inline-events .current-month', function(event){
+
+			_cal.find('#daily_ajax_response').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
 
 			var url = $(this).find('a').attr('href');
 			// url = url.replace('#', '&widget=1#');
