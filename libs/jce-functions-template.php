@@ -260,9 +260,29 @@ function jce_output_monthly_archive_heading(){
 	?>
 	<div class="jce-archive-heading">
 		<h1><?php echo $title; ?></h1>
-		<a id="jce-show-filters">Show Filters</a>
-		<a id="prev-month-link" class="jce-month-link" href="<?php echo $prev_link; ?>">&lt;</a>
-		<a id="next-month-link" class="jce-month-link" href="<?php echo $next_link; ?>">&gt;</a>
+		<a class="jce-show-filters">Show Filters</a>
+		<a class="jce-month-link jce-month-prev" href="<?php echo $prev_link; ?>">&lt;</a>
+		<a class="jce-month-link jce-month-next" href="<?php echo $next_link; ?>">&gt;</a>
+	</div>
+	<?php
+}
+
+add_action('jce/widget/before_event_calendar', 'jce_output_calendar_wrapper_open', 0);
+add_action('jce/before_event_calendar', 'jce_output_calendar_wrapper_open', 0);
+function jce_output_calendar_wrapper_open(){
+
+	$classes = apply_filters('jce/calendar_class', array());
+	$classes[] = 'jce-calendar'; 
+	$classes = array_unique($classes);
+	?>
+	<div class="<?php echo implode(' ', $classes); ?>">
+	<?php
+}
+
+add_action('jce/widget/after_event_calendar', 'jce_output_calendar_wrapper_close', 999);
+add_action('jce/after_event_calendar', 'jce_output_calendar_wrapper_close', 999);
+function jce_output_calendar_wrapper_close(){
+	?>
 	</div>
 	<?php
 }
@@ -452,6 +472,7 @@ function jce_output_widget_daily_archive(){
 	// add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
 }
 
+add_action('jce/widget/before_event_calendar', 'jce_output_event_filters', 11);
 add_action('jce/before_event_calendar', 'jce_output_event_filters', 11);
 add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
 function jce_output_event_filters(){
@@ -509,7 +530,6 @@ function jce_output_event_filters(){
 			<input type="hidden" name="cal_month" value="<?php echo $month; ?>" />
 			<input type="hidden" name="cal_year" value="<?php echo $year; ?>" />
 			<input type="hidden" name="view" value="<?php echo $view; ?>" />
-
 
 			<div class="input select">
 				<label for="event_venue">Venue</label>

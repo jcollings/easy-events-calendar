@@ -39,6 +39,7 @@
 
 .jce-archive-filters{
 	margin-bottom: 20px;
+	overflow: hidden;
 }
 
 .jce-archive-filters label {
@@ -91,14 +92,14 @@ a.jce-month-link {
 a.jce-month-link:visited{
 	color: #333 !important;
 }
-a#prev-month-link {
+a.jce-month-prev {
     right: 45px;
 }
-a#next-month-link {
+a.jce-month-next {
     right: 0;
 }
 
-a#jce-show-filters:hover{
+a.jce-show-filters:hover{
 	cursor: pointer;
 }
 
@@ -170,4 +171,16 @@ a#jce-show-filters:hover{
 .jce-single-event .jce-event-title{
 	font-size: 28px;
 	line-height: 40px;
+}
+
+/**
+ * Calendar widget
+ */
+
+.jce-widget-calendar .cal-day .cal-day-wrapper, .jce-widget-calendar .cal-day{
+	height: 32px;
+}
+
+.jce-widget-calendar .cal-day-wrapper ul{
+	display: none;
 }

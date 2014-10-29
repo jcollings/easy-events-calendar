@@ -21,6 +21,16 @@ class JCE_Widget_Calendar extends WP_Widget{
 
 	}
 
+	/**
+	 * Filter to add class to widget
+	 * @param array $classes
+	 */
+	public function add_widget_class($classes = array()){
+
+		$classes[] = 'jce-widget-calendar';
+		return $classes;
+	}
+
 
 	public function widget($args, $instance){
 
@@ -32,9 +42,9 @@ class JCE_Widget_Calendar extends WP_Widget{
 			'day' =>date('d')
 		), $atts, 'jce_event_calendar' ) );
 
-		echo "<div class=\"jce-widget-calendar\">";
-		
+		add_filter( 'jce/calendar_class', array($this, 'add_widget_class'));
 		do_action( 'jce/widget/before_event_calendar' );
+		remove_filter( 'jce/calendar_class', array($this, 'add_widget_class'));
 
 		$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : $year;
 		$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : $month;
@@ -49,8 +59,6 @@ class JCE_Widget_Calendar extends WP_Widget{
 		$calendar->render($events->posts, array('widget' => true));
 
 		do_action( 'jce/widget/after_event_calendar' );
-
-		echo "</div>";
 	}
 
 	public function get_cal_month_callback(){
@@ -68,6 +76,10 @@ class JCE_Widget_Calendar extends WP_Widget{
 
 		set_query_var( 'cal_year', $year );
 		set_query_var( 'cal_month', $month );
+
+		// remove wrapper div
+		remove_action('jce/widget/before_event_calendar', 'jce_output_calendar_wrapper_open', 0);
+		remove_action('jce/widget/after_event_calendar', 'jce_output_calendar_wrapper_close', 999);
 
 		// remove_action('jce/before_event_calendar', 'jce_output_event_filters', 11);
 		do_action( 'jce/widget/before_event_calendar' );
