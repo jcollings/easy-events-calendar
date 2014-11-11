@@ -46,6 +46,8 @@ class JCEvents2 {
 
 		add_action( 'query_vars' , array( $this, 'register_query_vars' ) );
 
+		add_action( 'init', array( $this, 'init' ) );
+
 		register_activation_hook( __FILE__, array( $this, 'plugin_activation') );
 
 		do_action( 'jcevents_loaded' );
@@ -85,6 +87,13 @@ class JCEvents2 {
 		if(isset($config['event_archive_view'])){
 			$this->default_view = $config['event_archive_view'];
 		}
+
+		
+	}
+
+	public function init(){
+
+		$this->disable_css = apply_filters( 'jce/disable_css', false );
 	}
 
 	public function register_query_vars($public_query_vars ){

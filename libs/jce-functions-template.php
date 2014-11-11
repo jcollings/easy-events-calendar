@@ -234,6 +234,16 @@ function jce_after_event_archive(){
 }
 
 /**
+ * Display Filters Link
+ */
+add_action('jce/after_archive_heading', 'jce_show_archive_filter', 15);
+function jce_show_archive_filter(){
+	?>
+	<a class="jce-show-filters">Show Filters</a>
+	<?php
+}
+
+/**
  * Display monthly title in archive only
  */
 add_action('jce/widget/before_event_calendar', 'jce_output_monthly_archive_heading');
@@ -260,7 +270,7 @@ function jce_output_monthly_archive_heading(){
 	?>
 	<div class="jce-archive-heading">
 		<h1><?php echo $title; ?></h1>
-		<a class="jce-show-filters">Show Filters</a>
+		<?php do_action('jce/after_archive_heading'); ?>
 		<a class="jce-month-link jce-month-prev" href="<?php echo $prev_link; ?>">&lt;</a>
 		<a class="jce-month-link jce-month-next" href="<?php echo $next_link; ?>">&gt;</a>
 	</div>
@@ -311,7 +321,7 @@ function jce_display_upcoming_heading(){
 	?>
 	<div class="jce-archive-heading">
 		<h1><?php echo $title; ?></h1>
-		<a id="jce-show-filters">Show Filters</a>
+		<?php do_action('jce/after_archive_heading'); ?>
 	</div>
 	<?php
 }
