@@ -118,26 +118,11 @@ class JCE_Admin_Settings{
      */
     private function load_settings_api(){
 
-    	// $terms = get_terms( 'department', array('hide_empty' => 0) );
-    	// $support_groups = array('' => 'Select a Term');
-    	
-    	// foreach($terms as $term){
-    	// 	$support_groups[$term->slug] = $term->name; 
-    	// }
-
-     //    // 
-     //    $ticket_status = array('' => 'Select a Status');
-     //    $terms = get_terms( 'status', array('hide_empty' => 0) );
-     //    foreach($terms as $term){
-     //        $ticket_status[$term->slug] = $term->name;    
-     //    }
-
-
-    	// $site_pages = get_pages();
-    	// $pages = array();
-    	// foreach($site_pages as $page){
-    	// 	$pages[$page->ID] = $page->post_title;
-    	// }
+    	$site_pages = get_pages();
+    	$pages = array();
+    	foreach($site_pages as $page){
+    		$pages[$page->ID] = $page->post_title;
+    	}
     	
         $archive_views = array(
             'calendar' => 'Monthly Calendar',
@@ -149,55 +134,10 @@ class JCE_Admin_Settings{
     		'base_section' => array(
     			'section' => array('page' => 'base_settings', 'title' => 'General Settings', 'description' => false),
     			'fields' => array(
-    				array('type' => 'select', 'id' => 'event_archive_view', 'section' => 'base_section', 'setting_id' => 'jce_config', 'label' => 'Event Archive View', 'choices' => $archive_views, 'value' => ''),
+                    array('type' => 'select', 'id' => 'event_page', 'section' => 'base_section', 'setting_id' => 'jce_config', 'label' => 'Events Page', 'choices' => $pages, 'value' => ''),
+    				array('type' => 'select', 'id' => 'event_archive_view', 'section' => 'base_section', 'setting_id' => 'jce_config', 'label' => 'Event Archive View', 'choices' => $archive_views, 'value' => '')
 		    	)
-    		)/*,
-			'ticket_section' => array(
-    			'section' => array('page' => 'base_settings', 'title' => 'Ticket Settings', 'description' => 'General Ticket Settings'),
-    			'fields' => array(
-    				array('type' => 'select', 'id' => 'default_group', 'section' => 'ticket_section', 'setting_id' => 'support_system_config', 'label' => 'Default Unassigned Group', 'choices' => $support_groups, 'value' => ''),
-                    array('type' => 'select', 'id' => 'ticket_open_status', 'section' => 'ticket_section', 'setting_id' => 'support_system_config', 'label' => 'Ticket Opened Status', 'choices' => $ticket_status, 'value' => ''),
-                    array('type' => 'select', 'id' => 'ticket_close_status', 'section' => 'ticket_section', 'setting_id' => 'support_system_config', 'label' => 'Ticket Closed Status', 'choices' => $ticket_status, 'value' => ''),
-                    array('type' => 'select', 'id' => 'ticket_responded_status', 'section' => 'ticket_section', 'setting_id' => 'support_system_config', 'label' => 'Ticket Team Reply Status', 'choices' => $ticket_status, 'value' => ''),
-                    array('type' => 'select', 'id' => 'ticket_reply_status', 'section' => 'ticket_section', 'setting_id' => 'support_system_config', 'label' => 'Ticket Author Reply Status', 'choices' => $ticket_status, 'value' => ''),
-		    	)
-    		),
-            'theme_section' => array(
-                'section' => array( 'page' => 'base_settings', 'title' => 'Theme Settings', 'description' => 'Theme Settings'),
-                'fields' => array(
-                    array( 'type' => 'select' , 'id' => 'disable_css', 'section' => 'theme_section', 'setting_id' => 'support_system_config', 'label' => 'Disable Plugin CSS', 'value' => '', 'choices' => array('No', 'Yes'))
-                )
-            ),*/
-            // email notifications tab
-            /*'notification_override' => array(
-                'section' => array('page' => 'notification_settings', 'title' => 'Notification Overrides', 'description' => 'Override templates with messages below'),
-                'fields' => array(
-                    array('type' => 'select', 'id' => 'override_admin', 'section' => 'notification_override', 'setting_id' => 'notification_override', 'label' => 'Override Admin Email', 'value' => '', 'choices' => array('no' => 'No', 'yes' => 'Yes')),
-                    array('type' => 'select', 'id' => 'override_member', 'section' => 'notification_override', 'setting_id' => 'notification_override', 'label' => 'Override Member Email', 'value' => '', 'choices' => array('no' => 'No', 'yes' => 'Yes')),
-                    array('type' => 'select', 'id' => 'override_public', 'section' => 'notification_override', 'setting_id' => 'notification_override', 'label' => 'Override Public Email', 'value' => '', 'choices' => array('no' => 'No', 'yes' => 'Yes')),
-                )
-            ),
-            'notification_admin' => array(
-                'section' => array('page' => 'notification_settings', 'title' => 'Admin Notification', 'description' => 'Notification email sent to admins once a ticket has been submitted.'),
-                'fields' => array(
-                    array('type' => 'text', 'id' => 'msg_title', 'section' => 'notification_admin', 'setting_id' => 'notification_admin', 'label' => 'Response Subject', 'value' => ''),
-                    array('type' => 'textarea', 'id' => 'msg_body', 'section' => 'notification_admin', 'setting_id' => 'notification_admin', 'label' => 'Response Message', 'value' => ''),
-                )
-            ),
-    		'notification_user' => array(
-    			'section' => array('page' => 'notification_settings', 'title' => 'Member Notification', 'description' => 'Confirmation email sent to member once a ticket has been submitted.'),
-    			'fields' => array(
-    				array('type' => 'text', 'id' => 'msg_title', 'section' => 'notification_user', 'setting_id' => 'notification_user', 'label' => 'Response Subject', 'value' => ''),
-    				array('type' => 'textarea', 'id' => 'msg_body', 'section' => 'notification_user', 'setting_id' => 'notification_user', 'label' => 'Response Message', 'value' => ''),
-    			)
-    		),
-            'notification_public' => array(
-                'section' => array('page' => 'notification_settings', 'title' => 'Public Notification', 'description' => 'Confirmation email sent to public user once a ticket has been submitted.'),
-                'fields' => array(
-                    array('type' => 'text', 'id' => 'msg_title', 'section' => 'notification_public', 'setting_id' => 'notification_public', 'label' => 'Response Subject', 'value' => ''),
-                    array('type' => 'textarea', 'id' => 'msg_body', 'section' => 'notification_public', 'setting_id' => 'notification_public', 'label' => 'Response Message', 'value' => ''),
-                )
-            ),*/
+    		)
     	);
 
     	$sections = array_merge($sections, apply_filters( 'jce/settings_sections', $sections));

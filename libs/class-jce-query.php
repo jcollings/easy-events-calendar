@@ -53,7 +53,7 @@ class JCE_Query{
 		if($query->is_main_query()){
 
 			// main event archive
-			if($query->is_post_type_archive( 'event' )){
+			if( $query->queried_object_id == JCE()->get_settings('event_page') || $query->is_post_type_archive( 'event' ) || $query->is_tax( 'event_venue' )){
 
 				// calendar or upcoming view
 				$view = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;

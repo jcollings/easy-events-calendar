@@ -455,11 +455,16 @@ function jce_add_single_back_btn(){
 		return false;
 	?>
 
-	<?php if(get_option('permalink_structure')): ?>
-		<a href="<?php echo site_url('/events'); ?>">&lt; Back to Events</a>
+	<?php if(wp_get_referer()): ?>
+		<a href="<?php echo esc_url(wp_get_referer() ); ?>">&lt; Back to Events</a>
 	<?php else: ?>
-		<a href="<?php echo site_url('?post_type=event'); ?>">&lt; Back to Events</a>
-	<?php endif;
+
+		<?php if(get_option('permalink_structure')): ?>
+			<a href="<?php echo site_url('/events'); ?>">&lt; Back to Events</a>
+		<?php else: ?>
+			<a href="<?php echo site_url('?post_type=event'); ?>">&lt; Back to Events</a>
+		<?php endif;
+	endif;
 }
 
 add_action('jce/after_event_calendar', 'jce_output_daily_archive');
@@ -545,7 +550,7 @@ function jce_output_event_filters(){
 
 	?>
 	<div class="jce-archive-filters">
-		<form action="#" method="GET">
+		<form action="<?php echo add_query_arg(array('cal_month' => $month, 'cal_year' => $year, 'view' => $view)); ?>" method="GET">
 
 			<?php if(!get_option('permalink_structure') && is_post_type_archive('event')):?>
 			<input type="hidden" name="post_type" value="event" />
@@ -613,18 +618,4 @@ function jce_output_event_filters(){
 		</form>
 	</div>
 	<?php
-}
-
-/**
- * Test to see if event_venue can have a header
- */
-add_action( 'jce/before_event_archive', 'jce_output_venue_header', 5);
-function jce_output_venue_header(){
-
-	if( is_tax( 'event_venue' ) ){
-		?>
-		<img src="http://placehold.it/800x300" alt="" width="100%">
-		<?php
-	}
-
 }

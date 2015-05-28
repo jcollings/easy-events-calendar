@@ -22,6 +22,8 @@ class JCEvents2 {
 	public $default_view = 'archive';
 	public $disable_css = false;
 
+	protected $settings = false;
+
 	/**
 	 * Single instance of class
 	 */
@@ -75,28 +77,43 @@ class JCEvents2 {
 		include_once 'libs/shortcodes/class-jce-shortcode-calendar.php';
 
 		// widgets
-		include_once 'libs/widgets/class-jce-widget-calendar.php';
+		// include_once 'libs/widgets/class-jce-widget-calendar.php';
 
 		// functions
 		include_once 'libs/jce-functions-general.php';
 		include_once 'libs/jce-functions-template.php';
 
 		// ajax funcs
-		include_once 'libs/class-jce-ajax.php';
+		// include_once 'libs/class-jce-ajax.php';
 	}
 
 	public function load_settings(){
+
+		// load values from jce_config
 		$config = get_option('jce_config');
-		if(isset($config['event_archive_view'])){
-			$this->default_view = $config['event_archive_view'];
+		foreach($config as $key => $value){
+			$this->settings[$key] = $value;
 		}
 
-		
+		if(isset($config['event_archive_view'])){
+			$this->default_view = $config['event_archive_view'];
+		}	
 	}
 
 	public function init(){
 
 		$this->disable_css = apply_filters( 'jce/disable_css', false );
+	}
+
+	public function get_settings($key){
+
+		if($this->settings && isset($this->settings[$key])){
+			return $this->settings[$key];
+		}elseif($this->settings && $key == null){
+			return $this->settings;
+		}
+
+		return false;
 	}
 
 	public function register_query_vars($public_query_vars ){

@@ -19,9 +19,9 @@ class JCE_Post_Types{
 		register_post_type( 'event', 
 			array(
 				'capability_type' => 'post',
-				'rewrite' => array('slug' => 'events'),
+				'rewrite' => array('slug' => 'event'),
 				'query_var' => true,
-				'has_archive' => true,
+				'has_archive' => false,
 				'show_in_nav_menus' => true,
 				'labels' => array(
 					'name' => __('Events'),
@@ -169,14 +169,18 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => false,
+			'public'            => true,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
 			'show_tagcloud'     => true,
 			'show_ui'           => true,
 			'query_var'         => 'event_venue',
-			'rewrite'           => true,
+			// 'rewrite'           => true,
+			'rewrite' 			=> array(
+				'slug' => 'event-venue',
+				'with_front' => false
+			),
 			'capabilities'      => array(),
 		);
 

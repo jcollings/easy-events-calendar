@@ -32,7 +32,9 @@ class JCE_Templates{
 	 */
 	public function template_include($template = ''){
 
-		if(is_post_type_archive( 'event' )){
+		global $wp_query;
+
+		if($wp_query->queried_object_id == JCE()->get_settings('event_page') || is_post_type_archive( 'event' ) || is_tax( 'event_venue' )){
 
 			// calendar or upcoming view
 			// $view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;

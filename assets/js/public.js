@@ -14,27 +14,27 @@ jQuery(document).ready(function($) {
 		});
 
 		// next/prev month
-		_cal.on('click', '	.jce-month-link', function(){
+		// _cal.on('click', '	.jce-month-link', function(){
 
-			_cal.find('.cal').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
-			_cal.find('#daily_ajax_response').html('');
+		// 	_cal.find('.cal').html('<div class="jce-event-archive"><article class="jce-event"><p>Loading Events</p></article></div>');
+		// 	_cal.find('#daily_ajax_response').html('');
 
-			var data = {
-				'action': 'get_cal_month',
-				'url': $(this).attr('href')
-			};
+		// 	var data = {
+		// 		'action': 'get_cal_month',
+		// 		'url': $(this).attr('href')
+		// 	};
 
-			jQuery.post(ajax_object.ajax_url, data, function(response) {
+		// 	jQuery.post(ajax_object.ajax_url, data, function(response) {
 
-				// quickfix to remove ajax-links from url
-				response = response.replace('/wp-admin/admin-ajax.php', '');
+		// 		// quickfix to remove ajax-links from url
+		// 		response = response.replace('/wp-admin/admin-ajax.php', '');
 
-				_cal.html(response);
-				_cal.find('.jce-archive-filters').hide();
-			});
+		// 		_cal.html(response);
+		// 		_cal.find('.jce-archive-filters').hide();
+		// 	});
 
-			return false;
-		});
+		// 	return false;
+		// });
 
 		// day tile
 		_cal.on('click', '.cal .current-month', function(event){
@@ -58,6 +58,11 @@ jQuery(document).ready(function($) {
 				_cal.find('#daily_ajax_response').html(response);
 				// alert('Got this from the server: ' + response);
 			});
+
+			// scroll down to ajax response
+			$('html, body').animate({
+                scrollTop: $("#daily_ajax_response").offset().top
+            }, 2000);
 
 			event.preventDefault();
 		});
