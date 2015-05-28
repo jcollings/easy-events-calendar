@@ -53,7 +53,7 @@ class JCE_Query{
 		if($query->is_main_query()){
 
 			// main event archive
-			if( $query->queried_object_id == JCE()->get_settings('event_page') || $query->is_post_type_archive( 'event' ) || $query->is_tax( 'event_venue' )){
+			if( $query->queried_object_id == JCE()->get_settings('event_page') || $query->is_tax( array('event_venue', 'event_organiser', 'event_category', 'event_tag') )){
 
 				// calendar or upcoming view
 				$view = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;
@@ -262,13 +262,20 @@ class JCE_Query{
 		return $query;
 	}
 
-	public function setup_term_queries(){
+	public function setup_term_queries(){		
 
 		$this->tax_counter = 0;
 		$temp = array();
 		
 		// integrate calendar taxonomy
 		$calendars = get_query_var('event_calendar' );
+		$field = 'slug';
+		if(!$calendars){
+			// filter ids
+			$calendars = isset($_GET['calendar']) ? $_GET['calendar'] : false;
+			$field = 'term_id';
+		}
+		
 		if($calendars){
 
 			// explod terms with ',' into array
@@ -292,6 +299,13 @@ class JCE_Query{
 
 		// integrate venue taxonomy
 		$venues = get_query_var('event_venue' );
+		$field = 'slug';
+		if(!$venues){
+			// filter ids
+			$venues = isset($_GET['venue']) ? $_GET['venue'] : false;
+			$field = 'term_id';
+		}
+		
 		if($venues){
 
 			// explod terms with ',' into array
@@ -303,7 +317,7 @@ class JCE_Query{
 			$tax_query = new WP_Tax_Query(array(
 				array(
 					'taxonomy' => 'event_venue',
-					'field' => 'slug',
+					'field' => $field,
 					'terms' => $venues
 				)
 			));
@@ -315,6 +329,13 @@ class JCE_Query{
 
 		// integrate organiser taxonomy
 		$organisers = get_query_var('event_organiser' );
+		$field = 'slug';
+		if(!$organisers){
+			// filter ids
+			$organisers = isset($_GET['organiser']) ? $_GET['organiser'] : false;
+			$field = 'term_id';
+		}
+		
 		if($organisers){
 
 			// explod terms with ',' into array
@@ -326,7 +347,7 @@ class JCE_Query{
 			$tax_query = new WP_Tax_Query(array(
 				array(
 					'taxonomy' => 'event_organiser',
-					'field' => 'slug',
+					'field' => $field,
 					'terms' => $organisers
 				)
 			));
@@ -338,6 +359,13 @@ class JCE_Query{
 
 		// integrate event category taxonomy
 		$categories = get_query_var('event_category' );
+		$field = 'slug';
+		if(!$categories){
+			// filter ids
+			$categories = isset($_GET['category']) ? $_GET['category'] : false;
+			$field = 'term_id';	
+		}
+		
 		if($categories){
 
 			// explod terms with ',' into array
@@ -349,7 +377,7 @@ class JCE_Query{
 			$tax_query = new WP_Tax_Query(array(
 				array(
 					'taxonomy' => 'event_category',
-					'field' => 'slug',
+					'field' => $field,
 					'terms' => $categories
 				)
 			));
@@ -361,6 +389,13 @@ class JCE_Query{
 
 		// integrate event tag taxonomy
 		$tags = get_query_var('event_tag' );
+		$field = 'slug';
+		if(!$tags){
+			// filter ids
+			$tags = isset($_GET['tag']) ? $_GET['tag'] : false;
+			$field = 'term_id';
+		}
+
 		if($tags){
 
 			// explod terms with ',' into array
@@ -372,7 +407,7 @@ class JCE_Query{
 			$tax_query = new WP_Tax_Query(array(
 				array(
 					'taxonomy' => 'event_tag',
-					'field' => 'slug',
+					'field' => $field,
 					'terms' => $tags
 				)
 			));

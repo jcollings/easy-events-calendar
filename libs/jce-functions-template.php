@@ -512,35 +512,35 @@ function jce_output_event_filters(){
 	$temp = get_terms( 'event_venue');
 	$venues = array();
 	foreach($temp as $x){
-		$venues[$x->slug] = $x->name;
+		$venues[$x->term_id] = $x->name;
 	}
 
 	// get organiser list
 	$temp = get_terms( 'event_organiser');
 	$organisers = array();
 	foreach($temp as $x){
-		$organisers[$x->slug] = $x->name;
+		$organisers[$x->term_id] = $x->name;
 	}
 
 	// get calendar list
 	$temp = get_terms( 'event_calendar');
 	$calendars = array();
 	foreach($temp as $x){
-		$calendars[$x->slug] = $x->name;
+		$calendars[$x->term_id] = $x->name;
 	}
 
 	// get tag list
 	$temp = get_terms( 'event_tag');
 	$tags = array();
 	foreach($temp as $x){
-		$tags[$x->slug] = $x->name;
+		$tags[$x->term_id] = $x->name;
 	}
 
 	// get category list
 	$temp = get_terms( 'event_category');
 	$categories = array();
 	foreach($temp as $x){
-		$categories[$x->slug] = $x->name;
+		$categories[$x->term_id] = $x->name;
 	}
 
 	// todo: doesn't follow passed shortcode arguments
@@ -562,55 +562,65 @@ function jce_output_event_filters(){
 			<input type="hidden" name="cal_year" value="<?php echo $year; ?>" />
 			<input type="hidden" name="view" value="<?php echo $view; ?>" />
 
+			<?php if( !is_tax( 'event_venue' )): ?>
 			<div class="input select">
-				<label for="event_venue">Venue</label>
-				<select name="event_venue" id="event_venue">
+				<label for="venue">Venue</label>
+				<select name="venue" id="venue">
 					<option value="">All Venues</option>
 					<?php foreach($venues as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_venue' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<?php endif; ?>
 
+			<?php if( !is_tax( 'event_organiser' )): ?>
 			<div class="input select">
-				<label for="event_organiser">Organiser</label>
-				<select name="event_organiser" id="event_organiser">
+				<label for="organiser">Organiser</label>
+				<select name="organiser" id="organiser">
 					<option value="">All Organisers</option>
 					<?php foreach($organisers as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_organiser' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<?php endif; ?>
 
+			<?php if( !is_tax( 'event_calendar' )): ?>
 			<div class="input select">
-				<label for="event_calendar">Calendar</label>
-				<select name="event_calendar" id="event_calendar">
+				<label for="calendar">Calendar</label>
+				<select name="calendar" id="calendar">
 					<option value="">All Calendars</option>
 					<?php foreach($calendars as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_calendar' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<?php endif; ?>
 
+			<?php if( !is_tax( 'event_tag' )): ?>
 			<div class="input select">
-				<label for="event_tag">Tags</label>
-				<select name="event_tag" id="event_tag">
+				<label for="tag">Tags</label>
+				<select name="tag" id="tag">
 					<option value="">All Tags</option>
 					<?php foreach($tags as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_tag' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<?php endif; ?>
 
+			<?php if( !is_tax( 'event_category' )): ?>
 			<div class="input select">
-				<label for="event_category">Categories</label>
-				<select name="event_category" id="event_category">
+				<label for="category">Categories</label>
+				<select name="category" id="category">
 					<option value="">All Categories</option>
 					<?php foreach($categories as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_category' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<?php endif; ?>
 
 			<div class="input submit">
 				<input type="submit" value="filter" />

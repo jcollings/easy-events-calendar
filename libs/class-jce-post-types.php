@@ -73,14 +73,17 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => false,
+			'public'            => true,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
 			'show_tagcloud'     => true,
 			'show_ui'           => true,
 			'query_var'         => 'event_category',
-			'rewrite'           => true,
+			'rewrite' 			=> array(
+				'slug' => 'event-category',
+				'with_front' => false
+			),
 			'capabilities'      => array(),
 		);
 
@@ -133,14 +136,17 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => false,
+			'public'            => true,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
 			'show_tagcloud'     => true,
 			'show_ui'           => true,
 			'query_var'         => 'event_tag',
-			'rewrite'           => true,
+			'rewrite' 			=> array(
+				'slug' => 'event-tag',
+				'with_front' => false
+			),
 			'capabilities'      => array(),
 		);
 
@@ -209,14 +215,17 @@ class JCE_Post_Types{
 
 		$args = array(
 			'labels'            => $labels,
-			'public'            => false,
+			'public'            => true,
 			'show_in_nav_menus' => true,
 			'show_admin_column' => false,
 			'hierarchical'      => true,
 			'show_tagcloud'     => true,
 			'show_ui'           => true,
 			'query_var'         => 'event_organiser',
-			'rewrite'           => true,
+			'rewrite' 			=> array(
+				'slug' => 'event-organiser',
+				'with_front' => false
+			),
 			'capabilities'      => array(),
 		);
 

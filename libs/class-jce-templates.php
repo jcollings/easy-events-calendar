@@ -34,7 +34,7 @@ class JCE_Templates{
 
 		global $wp_query;
 
-		if($wp_query->queried_object_id == JCE()->get_settings('event_page') || is_post_type_archive( 'event' ) || is_tax( 'event_venue' )){
+		if($wp_query->queried_object_id == JCE()->get_settings('event_page') || $wp_query->is_tax( array( 'event_venue', 'event_organiser', 'event_category', 'event_tag') ) ){
 
 			// calendar or upcoming view
 			// $view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
