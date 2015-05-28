@@ -112,9 +112,9 @@ class JCE_Shortcode_Archive{
 			do_action( 'jce/before_event_archive' );
 		}		
 
-		if(have_posts()): ?>
+		do_action( 'jce/before_event_loop' );
 
-			<?php do_action( 'jce/before_event_loop' ); ?>
+		if(have_posts()): ?>
 
 			<?php while(have_posts()): the_post(); ?>
 
@@ -128,11 +128,11 @@ class JCE_Shortcode_Archive{
 				
 			<?php endwhile; ?>
 
-			<?php do_action( 'jce/after_event_loop' ); ?>
-
 		<?php else: ?>
 			<article class="jce-event"><p>No Events have been found</p></article>
 		<?php endif;
+
+		do_action( 'jce/after_event_loop' );
 
 		wp_reset_query();
 

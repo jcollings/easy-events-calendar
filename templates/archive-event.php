@@ -7,7 +7,7 @@ get_header(); ?>
 
 <?php if(have_posts()): ?>
 
-	<?php do_action( 'jce/before_event_loop' ); ?>
+	<?php do_action( 'jce/before_event_loop' ); ?><div class="jce-events">
 
 	<?php while(have_posts()): the_post(); ?>
 
@@ -15,7 +15,7 @@ get_header(); ?>
 		
 	<?php endwhile; ?>
 
-	<?php do_action( 'jce/after_event_loop' ); ?>
+	</div><?php do_action( 'jce/after_event_loop' ); ?>
 	
 <?php else: ?>
 	<article class="jce-event"><p>No Events have been found</p></article>

@@ -80,6 +80,9 @@ class JCEvents2 {
 		// functions
 		include_once 'libs/jce-functions-general.php';
 		include_once 'libs/jce-functions-template.php';
+
+		// ajax funcs
+		include_once 'libs/class-jce-ajax.php';
 	}
 
 	public function load_settings(){

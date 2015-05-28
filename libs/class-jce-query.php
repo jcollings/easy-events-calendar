@@ -10,10 +10,13 @@ class JCE_Query{
 	private $cal_day = null;
 	private $tax_counter = 0;
 
+	public $query_vars = array();
+
 	public function __construct(){
 
-		$this->cal_month = date('m');
-		$this->cal_year = date('Y');
+		$this->query_vars['cal_month'] = $this->cal_month = date('m');
+		$this->query_vars['cal_year'] = $this->cal_year = date('Y');
+		$this->query_vars['view'] = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;
 
 		if(!is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ){
 			add_action( 'pre_get_posts', array($this, 'pre_get_posts'), 0);

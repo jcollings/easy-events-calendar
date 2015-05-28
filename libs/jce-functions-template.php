@@ -234,6 +234,23 @@ function jce_after_event_archive(){
 }
 
 /**
+ * Output cal wrapper div around event archive
+ */
+add_action( 'jce/before_event_loop', 'jce_before_event_loop');
+function jce_before_event_loop(){
+	?>
+	<div class="cal">
+	<?php
+}
+
+add_action( 'jce/after_event_loop', 'jce_after_event_loop');
+function jce_after_event_loop(){
+	?>
+	</div>
+	<?php
+}
+
+/**
  * Display Filters Link
  */
 add_action('jce/after_archive_heading', 'jce_show_archive_filter', 15);
@@ -250,23 +267,22 @@ add_action('jce/widget/before_event_calendar', 'jce_output_monthly_archive_headi
 add_action('jce/before_event_calendar', 'jce_output_monthly_archive_heading');
 function jce_output_monthly_archive_heading(){
 
-	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : date('Y');
-	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : date('m');
+	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : JCE()->query->query_vars['cal_year'];
+	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : JCE()->query->query_vars['cal_month'];
+	$view = get_query_var( 'view' ) ? get_query_var( 'view' ) : JCE()->query->query_vars['view'];
 
 	if(($month - 1) <= 0){
-		$prev_link = add_query_arg(array('cal_year' => ($year - 1), 'cal_month' => 12));
-		$next_link = add_query_arg(array('cal_year' => $year, 'cal_month' => ($month+1)));
+		$prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year - 1), 'cal_month' => 12));
+		$next_link = add_query_arg(array('view' => $view, 'cal_year' => $year, 'cal_month' => ($month+1)));
 	}elseif(($month + 1) > 12){
-		$prev_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month-1)));
-		$next_link = add_query_arg(array('cal_year' => ($year+1), 'cal_month' => (1)));
+		$prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month-1)));
+		$next_link = add_query_arg(array('view' => $view, 'cal_year' => ($year+1), 'cal_month' => (1)));
 	}else{
-		$prev_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month-1)));
-		$next_link = add_query_arg(array('cal_year' => ($year), 'cal_month' => ($month+1)));
+		$prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month-1)));
+		$next_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month+1)));
 	}
 
 	$title = date('F, Y', strtotime("$year-$month-01")); 
-	// var_dump($title);
-	// 
 	?>
 	<div class="jce-archive-heading">
 		<h1><?php echo $title; ?></h1>
@@ -482,7 +498,7 @@ function jce_output_widget_daily_archive(){
 	// add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
 }
 
-add_action('jce/widget/before_event_calendar', 'jce_output_event_filters', 11);
+// add_action('jce/widget/before_event_calendar', 'jce_output_event_filters', 11);
 add_action('jce/before_event_calendar', 'jce_output_event_filters', 11);
 add_action('jce/before_event_archive', 'jce_output_event_filters', 11);
 function jce_output_event_filters(){
@@ -597,4 +613,18 @@ function jce_output_event_filters(){
 		</form>
 	</div>
 	<?php
+}
+
+/**
+ * Test to see if event_venue can have a header
+ */
+add_action( 'jce/before_event_archive', 'jce_output_venue_header', 5);
+function jce_output_venue_header(){
+
+	if( is_tax( 'event_venue' ) ){
+		?>
+		<img src="http://placehold.it/800x300" alt="" width="100%">
+		<?php
+	}
+
 }
