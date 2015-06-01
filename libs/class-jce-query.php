@@ -38,22 +38,27 @@ class JCE_Query{
 
 	public function pre_get_posts($query){
 
-		// fix to allow shortcodes on homepage with query vars
 		if ( $query->is_main_query() ) {
 			if ( 'page' == get_option( 'show_on_front' ) ) {
-				if ( '' != get_query_var( 'cal_month' ) && '' != get_query_var( 'cal_year' ) ) { // Registered custom query var
+
+				// if front page is events page
+				// if(JCE()->get_settings('event_page') == get_option('page_on_front' )){
+                if (get_query_var('page_id') == get_option( 'page_on_front' )) { // Registered custom query var
+
+
 					$query->set( 'page_id', get_option( 'page_on_front' ) );
 					$query->is_page = true;
 					$query->queried_object = get_post(get_option('page_on_front') );
-					$query->queried_object_id = get_option('page_on_front' );
+					$query->queried_object_id = get_option('page_on_front' );							
 				}
 			}
-		}
-
-		if($query->is_main_query()){
 
 			// main event archive
-			if( $query->queried_object_id == JCE()->get_settings('event_page') || $query->is_tax( array('event_venue', 'event_organiser', 'event_category', 'event_tag') )){
+			if( 
+				$query->queried_object_id == JCE()->get_settings('event_page') 
+				|| $query->is_tax( array('event_venue', 'event_organiser', 'event_category', 'event_tag') )
+				// || ($query->queried_object_id =='page' == get_option( 'show_on_front') && JCE()->get_settings('event_page') == get_option('page_on_front' ) )
+				){
 
 				// calendar or upcoming view
 				$view = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;

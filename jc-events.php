@@ -89,6 +89,12 @@ class JCEvents2 {
 
 	public function load_settings(){
 
+		// default values
+		$this->settings = array(
+			'event_page' => -1,
+			'event_archive_view' => 'archive'
+		);
+
 		// load values from jce_config
 		$config = get_option('jce_config');
 		foreach($config as $key => $value){
