@@ -61,7 +61,7 @@ function jce_event_venue_meta($key = 'name', $echo = true){
 		$term = array_shift($term);
 		switch($key){
 			case 'name':
-				$result = $term->name;
+				$result = '<a href="' . get_term_link( $term, 'event_venue' ) . '">' . $term->name . '</a>';
 			break;
 			case 'address':
 			case 'city':
@@ -89,7 +89,7 @@ function jce_event_organiser_meta($key = 'name', $echo = true){
 		$term = array_shift($term);
 		switch($key){
 			case 'name':
-				$result = $term->name;
+				$result = '<a href="' . get_term_link( $term, 'event_organiser' ) . '">' . $term->name . '</a>';
 			break;
 			case 'phone':
 			case 'website':
@@ -331,9 +331,39 @@ function jce_output_daily_archive_heading(){
 	echo "<h2 class=\"jce-archive-title\">".$title."</h2>";
 }
 
+/**
+ * Events Archive Title
+ * @return void
+ */
 function jce_display_upcoming_heading(){
 
-	$title = apply_filters( 'jce/archive_heading', 'Upcoming Events' );
+	if( is_tax( 'event_venue' ) ){
+
+		// Event Venue Archive Title
+		$title = sprintf('Upcoming Events Venue: %s', single_term_title('', false));
+
+	}elseif(is_tax('event_organiser')){
+
+		// Event Organiser Archive Title
+		$title = sprintf('Upcoming Events Organiser: %s', single_term_title('', false));
+
+	}elseif(is_tax('event_category')){
+
+		// Event Category Archive Title
+		$title = sprintf('Upcoming Events Category: %s', single_term_title('', false));
+
+	}elseif(is_tax('event_tag')){
+
+		// Event Tag Archive Title
+		$title = sprintf('Upcoming Events Tag: %s', single_term_title('', false));
+
+	}else{
+
+		// Events Archive Title
+		$title = 'Upcoming Events';
+	}
+
+	$title = apply_filters( 'jce/archive_heading', $title );
 	?>
 	<div class="jce-archive-heading">
 		<h1><?php echo $title; ?></h1>
@@ -432,19 +462,38 @@ add_action('jce/single_event_content', 'jce_add_single_event_footer_meta', 20);
 function jce_add_single_event_footer_meta(){
 	
 	global $post;
-	$tags = wp_get_object_terms( $post->ID, 'event_tag', array('fields' => 'names') );
-	$categories = wp_get_object_terms( $post->ID, 'event_category', array('fields' => 'names') );
+	$tags = wp_get_object_terms( $post->ID, 'event_tag', array('fields' => 'all') );
+	$tag_output = '';
+	if($tags){
+		foreach($tags as $tag){
+			if($tag_output != ''){
+				$tag_output .= ', ';
+			}
+			$tag_output .= '<a href="' . get_term_link( $tag, 'event_tag' ) . '">' . $tag->name . '</a>';
+		}
+	}
+	
+	$categories = wp_get_object_terms( $post->ID, 'event_category', array('fields' => 'all') );
+	$cat_output = '';
+	if($categories){
+		foreach($categories as $cat){
+			if($cat_output != ''){
+				$cat_output .= ', ';
+			}
+			$cat_output .= '<a href="' . get_term_link( $cat, 'event_category' ) . '">' . $cat->name . '</a>';
+		}
+	}
 	?>
 	<?php 
 	// output event tags
-	if($tags): ?>
-	<p><span class="jce-meta-title"><i class="fa fa-bookmark"></i> Tagged:</span> <?php echo implode(', ', $tags); ?></p>
+	if( !empty( $tag_output ) ): ?>
+	<p><span class="jce-meta-title"><i class="fa fa-bookmark"></i> Tagged:</span> <?php echo $tag_output; ?></p>
 	<?php endif; ?>
 
 	<?php 
 	// output event categories
-	if($categories): ?>
-	<p><span class="jce-meta-title"><i class="fa fa-tag"></i> Categories:</span> <?php echo implode(', ', $categories); ?></p>
+	if( !empty( $cat_output ) ): ?>
+	<p><span class="jce-meta-title"><i class="fa fa-tag"></i> Categories:</span> <?php echo $cat_output; ?></p>
 	<?php endif;
 }
 
