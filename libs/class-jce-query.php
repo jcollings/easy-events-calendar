@@ -55,7 +55,7 @@ class JCE_Query{
 
 			// main event archive
 			if( 
-				$query->queried_object_id == JCE()->get_settings('event_page') 
+				( isset( $query->queried_object_id ) && $query->queried_object_id == JCE()->get_settings( 'event_page' ) )
 				|| $query->is_tax( array('event_venue', 'event_organiser', 'event_category', 'event_tag') )
 				// || ($query->queried_object_id =='page' == get_option( 'show_on_front') && JCE()->get_settings('event_page') == get_option('page_on_front' ) )
 				){
