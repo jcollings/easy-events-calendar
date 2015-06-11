@@ -52,7 +52,7 @@ class JCEvents2 {
 
 		register_activation_hook( __FILE__, array( $this, 'plugin_activation') );
 
-		do_action( 'jcevents_loaded' );
+		do_action( 'jce/loaded' );
 	}
 
 	public function includes(){
@@ -67,10 +67,12 @@ class JCEvents2 {
 		// admin includes
 		include_once 'libs/admin/class-jce-admin-venues.php';
 		include_once 'libs/admin/class-jce-admin-organisers.php';
-		include_once 'libs/admin/class-jce-admin-calendars.php';
 		include_once 'libs/admin/class-jce-admin-post-types.php';
 		include_once 'libs/admin/class-jce-admin-recurring-events.php';
 		include_once 'libs/admin/class-jce-admin-settings.php';
+
+		// modules
+		include_once 'libs/class-jce-calendars.php'; // event calendar taxonomy
 
 		// shortcodes
 		include_once 'libs/shortcodes/class-jce-shortcode-archive.php';

@@ -88,30 +88,6 @@ class JCE_Post_Types{
 		);
 
 		register_taxonomy( 'event_category', array( 'event' ), $args );	
-
-		/**
-		 * Register Calendar Taxonomy
-		 */
-		
-		$labels = array(
-		    'name'                => _x( 'Calendars', 'taxonomy general name' ),
-		    'singular_name'       => _x( 'Calendar', 'taxonomy singular name' ),
-		    'search_items'        => __( 'Search Calendars' ),
-		    'all_items'           => __( 'All Calendars' ),
-		    'parent_item'         => __( 'Parent Calendar' ),
-		    'parent_item_colon'   => __( 'Parent Calendar:' ),
-		    'edit_item'           => __( 'Edit Calendar' ), 
-		    'update_item'         => __( 'Update Calendar' ),
-		    'add_new_item'        => __( 'Add New Calendar' ),
-		    'new_item_name'       => __( 'New Calendar Name' ),
-		    'menu_name'           => __( 'Calendar' )
-		); 
-		
-		register_taxonomy( 'event_calendar', array('event'), array(
-			'public' => false,
-			'hierarchical' => true,
-			'labels' => $labels,  
-		));	
 		
 		/**
 		 * Register Tag Taxonomy
@@ -230,6 +206,8 @@ class JCE_Post_Types{
 		);
 
 		register_taxonomy( 'event_organiser', array( 'event' ), $args );
+
+		do_action('jce/register_taxonomies');
 	}
 }
 

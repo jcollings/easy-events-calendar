@@ -571,13 +571,6 @@ function jce_output_event_filters(){
 		$organisers[$x->term_id] = $x->name;
 	}
 
-	// get calendar list
-	$temp = get_terms( 'event_calendar');
-	$calendars = array();
-	foreach($temp as $x){
-		$calendars[$x->term_id] = $x->name;
-	}
-
 	// get tag list
 	$temp = get_terms( 'event_tag');
 	$tags = array();
@@ -611,6 +604,8 @@ function jce_output_event_filters(){
 			<input type="hidden" name="cal_year" value="<?php echo $year; ?>" />
 			<input type="hidden" name="view" value="<?php echo $view; ?>" />
 
+			<?php do_action( 'jce/event_archive_filters' ); ?>
+
 			<?php if( !is_tax( 'event_venue' )): ?>
 			<div class="input select">
 				<label for="venue">Venue</label>
@@ -630,18 +625,6 @@ function jce_output_event_filters(){
 					<option value="">All Organisers</option>
 					<?php foreach($organisers as $key => $value): ?>
 						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_organiser' ), $key, true ); ?>><?php echo $value; ?></option>
-					<?php endforeach; ?>
-				</select>
-			</div>
-			<?php endif; ?>
-
-			<?php if( !is_tax( 'event_calendar' )): ?>
-			<div class="input select">
-				<label for="calendar">Calendar</label>
-				<select name="calendar" id="calendar">
-					<option value="">All Calendars</option>
-					<?php foreach($calendars as $key => $value): ?>
-						<option value="<?php echo $key; ?>" <?php selected( get_query_var('event_calendar' ), $key, true ); ?>><?php echo $value; ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
