@@ -279,16 +279,12 @@ class JCE_Calendar{
 		echo '<ul>'."\n";
 		foreach($events as $e){
 
-			$temp = array();
-			$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
-			foreach($post_event_cals as $event){
-				$temp[] = $event->slug;
-			}
+			$classes = apply_filters( 'jce/calendar/inline_event_classes', array(), $e );
 
 			if(is_admin()){
-				echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'.get_edit_post_link($e['id'] ) .'">'.$e['title'].'</a></li>'."\n";
+				echo '<li class="event-list '.implode(' ', $classes ).'"><a href="'.get_edit_post_link($e['id'] ) .'">'.$e['title'].'</a></li>'."\n";
 			}else{
-				echo '<li class="event-list '.implode(' ', $temp ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";
+				echo '<li class="event-list '.implode(' ', $classes ).'"><a href="'. $e['link'] .'">'.$e['title'].'</a></li>'."\n";
 			}
 			
 		}
@@ -463,18 +459,7 @@ class JCE_Calendar{
 		}
 
 		<?php 
-		
-	
-		$cal_terms = get_terms( 'event_calendar', array('hide_empty' => false) );
-
-		if($cal_terms){
-			foreach($cal_terms as $term){
-			    $term_meta = get_option( "event_calendar_{$term->term_id}" );
-			    echo '.cal-day-wrapper li.event-list.'.$term->slug.'{'."\n\t";
-			    echo 'background:' . $term_meta['calendar_colour'] . ';'."\n";
-			    echo '}'."\n";
-			}
-		}
+		do_action( 'jce/calendar/inline_style' );
 		?>
 
 		</style>

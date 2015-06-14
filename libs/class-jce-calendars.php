@@ -10,6 +10,10 @@ class JCE_Calendars{
 		add_action( 'jce/register_taxonomies', array( $this, 'register_taxonomies' ) );
 		add_action( 'jce/event_archive_filters' , array( $this, 'event_archive_filters') );
 
+		add_filter( 'jce/calendar/inline_event_classes', array( $this, 'calendar_inline_event_classes'), 10, 2 );
+
+		add_action( 'jce/calendar/inline_style', array( $this, 'calendar_inline_dynamic_css' ) );
+
 		if(is_admin()){
 
 			// load admin functions
@@ -64,6 +68,32 @@ class JCE_Calendars{
 			</select>
 		</div>
 		<?php endif;
+	}
+
+	public function calendar_inline_event_classes($classes = '', $e){
+		
+		$post_event_cals = wp_get_post_terms( $e['id'], 'event_calendar');
+		if($post_event_cals){
+			foreach($post_event_cals as $event){
+				$classes[] = $event->slug;
+			}
+		}
+
+		return $classes;
+	}
+
+	public function calendar_inline_dynamic_css(){
+
+		$cal_terms = get_terms( 'event_calendar', array('hide_empty' => false) );
+
+		if($cal_terms){
+			foreach($cal_terms as $term){
+			    $term_meta = get_option( "event_calendar_{$term->term_id}" );
+			    echo '.cal-day-wrapper li.event-list.'.$term->slug.'{'."\n\t";
+			    echo 'background:' . $term_meta['calendar_colour'] . ';'."\n";
+			    echo '}'."\n";
+			}
+		}
 	}
 }
 

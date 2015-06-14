@@ -60,6 +60,9 @@ class JCE_Query{
 				// || ($query->queried_object_id =='page' == get_option( 'show_on_front') && JCE()->get_settings('event_page') == get_option('page_on_front' ) )
 				){
 
+				// stop query on empty event archive/calendar
+				add_action( 'wp', array( $this, 'stop_archive_404' ) );
+
 				// calendar or upcoming view
 				$view = isset($_GET['view']) ? $_GET['view'] : JCE()->default_view;
 				// $view = get_query_var('view') ? get_query_var('view' ) : JCE()->default_view;
@@ -78,6 +81,24 @@ class JCE_Query{
 					add_filter( 'posts_clauses', array($this, 'setup_upcoming_query'), 10);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Fix to stop main event query returning 404 if no events found
+	 * @return void
+	 */
+	public function stop_archive_404( ) {
+
+		global $wp_query;
+		
+		if($wp_query->is_404()){
+
+			$wp_query->set( 'page_id', get_option( 'page_on_front' ) );
+			$wp_query->is_page = true;
+			$wp_query->queried_object = get_post(get_option('page_on_front') );
+			$wp_query->queried_object_id = get_option('page_on_front' );
+			$wp_query->is_404 = false;
 		}
 	}
 
