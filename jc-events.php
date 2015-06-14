@@ -85,6 +85,10 @@ class JCEvents2 {
 		include_once 'libs/jce-functions-general.php';
 		include_once 'libs/jce-functions-template.php';
 
+		// templates & hooks
+		include_once 'libs/jce-template-functions.php';
+		include_once 'libs/jce-template-hooks.php';
+
 		// ajax funcs
 		// include_once 'libs/class-jce-ajax.php';
 	}
