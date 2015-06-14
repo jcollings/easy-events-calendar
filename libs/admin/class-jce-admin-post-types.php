@@ -194,12 +194,6 @@ class JCE_Admin_PostTypes{
 		<?php 
 		global $post;
 
-		$temp = array();
-		$post_event_cals = wp_get_post_terms( $post->ID, 'event_calendar');
-		foreach($post_event_cals as $e){
-			$temp[] = $e->slug;
-		}
-
 		// get current event organiser
 		$post_organiser = wp_get_post_terms( $post->ID, 'event_organiser');
 		$current_post_organiser = '';
@@ -215,17 +209,7 @@ class JCE_Admin_PostTypes{
 		}
 		?>
 
-		<div class="input radio">
-			<label>Calendar:</label>
-			<?php
-			$calendars = get_terms( 'event_calendar', array('hide_empty' => false));
-		    foreach($calendars as $calendar): ?>
-			<div class="option">
-				<input type="checkbox" id="<?php echo $this->meta_id; ?>" name="<?php echo $this->meta_id; ?>[_event_calendar][]" value="<?php echo $calendar->slug ?>" <?php if( in_array($calendar->slug, $temp) || count($calendars) == 1): ?> checked="checked"<?php endif; ?> />
-				<label><?php echo $calendar->name; ?></label>
-			</div>
-			<?php endforeach; ?>
-		</div>
+		
 
 		<?php 
 
@@ -301,16 +285,6 @@ class JCE_Admin_PostTypes{
 		// Check if the current user has permission to edit the post. 
 		if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
 			return $post_id;
-
-
-		// add events to events_cal
-		if(!empty($_POST[$this->meta_id]['_event_calendar'])){
-			$_event_cals = array();
-			foreach($_POST[$this->meta_id]['_event_calendar'] as $cal){
-				$_event_cals[] = $cal;
-			}
-			wp_set_object_terms( $post_id, $_event_cals, 'event_calendar');
-		}
 
 		// set all day event
 		if(isset($_POST[$this->meta_id]['_event_all_day']) && $_POST[$this->meta_id]['_event_all_day'] == 'yes'){

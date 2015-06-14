@@ -15,6 +15,9 @@ class JCE_Admin_Calendars{
 			add_action( 'admin_head', array($this, 'hide_slug_box')  );
 			add_action( 'parent_file', array($this, 'menu_highlight'));
 			add_action( 'admin_menu', array( $this, 'register_menu_pages' ) );
+
+			add_action( 'jce/admin_meta_fields', array( $this, 'show_meta_field' ), 10, 2);
+			add_action('jce/save_event', array( $this, 'save_meta_field' ), 10, 1);
 		}
 	}
 
@@ -184,6 +187,41 @@ class JCE_Admin_Calendars{
 		if ($taxonomy == 'event_calendar')
 			$parent_file = 'edit.php?post_type=events';
 		return $parent_file;
+	}
+
+	public function show_meta_field($object, $box){
+
+		$temp = array();
+		$post_event_cals = wp_get_post_terms( $object->ID, 'event_calendar');
+		foreach($post_event_cals as $e){
+			$temp[] = $e->slug;
+		}
+
+		?>
+		<div class="input radio">
+			<label>Calendar:</label>
+			<?php
+			$calendars = get_terms( 'event_calendar', array('hide_empty' => false));
+		    foreach($calendars as $calendar): ?>
+			<div class="option">
+				<input type="checkbox" id="jcevents" name="jcevents[_event_calendar][]" value="<?php echo $calendar->slug ?>" <?php if( in_array($calendar->slug, $temp) || count($calendars) == 1): ?> checked="checked"<?php endif; ?> />
+				<label><?php echo $calendar->name; ?></label>
+			</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
+
+	public function save_meta_field($post_id){
+
+		// add events to events_cal
+		$_event_cals = array();
+		if(!empty($_POST['jcevents']['_event_calendar'])){
+			foreach($_POST['jcevents']['_event_calendar'] as $cal){
+				$_event_cals[] = $cal;
+			}
+		}
+		wp_set_object_terms( $post_id, $_event_cals, 'event_calendar');
 	}
 }
 
