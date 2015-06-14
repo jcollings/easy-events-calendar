@@ -72,7 +72,7 @@ class JCEvents2 {
 		include_once 'libs/admin/class-jce-admin-settings.php';
 
 		// modules
-		include_once 'libs/class-jce-calendars.php'; // event calendar taxonomy
+		// include_once 'libs/class-jce-calendars.php'; // event calendar taxonomy
 
 		// shortcodes
 		include_once 'libs/shortcodes/class-jce-shortcode-archive.php';
