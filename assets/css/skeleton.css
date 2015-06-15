@@ -173,6 +173,10 @@ a.jce-show-filters:hover{
 	line-height: 40px;
 }
 
+.jce-event-venue, .jce-event-organiser{
+    width: 50%;
+}
+
 /**
  * Calendar widget
  */

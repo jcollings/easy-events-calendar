@@ -8,22 +8,9 @@ function jce_add_event_title(){
 	}	
 }
 
-// Add event meta to event
+// Add event meta to archive
 function jce_add_event_meta(){
-
-	$start_date = jce_event_start_date('jS', false);
-	$end_date = jce_event_end_date('jS', false);
-	?>
-	<div class="jce-event-meta">
-		<?php
-		if($start_date != $end_date){
-			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('jS F Y g:i a', false)."</span>";
-		}else{
-			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</span>";
-		}
-		?>
-	</div>
-	<?php
+    jce_get_template_part('archive-event/meta');
 }
 
 /** ----------------------------------------------
@@ -214,28 +201,11 @@ function jce_output_event_filters(){
  ---------------------------------------------- */
 function jce_add_event_date(){
 
-	$start_date = jce_event_start_date('jS', false);
-	$end_date = jce_event_end_date('jS', false);
-	?>
-	<div class="jce-event-meta">
-		<?php
-		if($start_date != $end_date){
-			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('jS F Y g:i a', false)."</span>";
-		}else{
-			echo "<span><i class='fa fa-calendar-o'></i> ".jce_event_start_date('jS F Y g:i a', false)." - ".jce_event_end_date('g:i a', false)."</span>";
-		}
-		?>
-	</div>
-	<?php
+    jce_get_template_part('single-event/meta');
 }
 
 function jce_add_single_event_content(){
-	?>
-	<div class="jce-event-content">
-		<h2>Event Details</h2>
-		<?php the_content(); ?>
-	</div>
-	<?php
+    jce_get_template_part('single-event/content');
 }
 
 /**
@@ -260,41 +230,7 @@ function jce_add_single_event_organiser(){
 }
 
 function jce_add_single_event_footer_meta(){
-	
-	global $post;
-	$tags = wp_get_object_terms( $post->ID, 'event_tag', array('fields' => 'all') );
-	$tag_output = '';
-	if($tags){
-		foreach($tags as $tag){
-			if($tag_output != ''){
-				$tag_output .= ', ';
-			}
-			$tag_output .= '<a href="' . get_term_link( $tag, 'event_tag' ) . '">' . $tag->name . '</a>';
-		}
-	}
-	
-	$categories = wp_get_object_terms( $post->ID, 'event_category', array('fields' => 'all') );
-	$cat_output = '';
-	if($categories){
-		foreach($categories as $cat){
-			if($cat_output != ''){
-				$cat_output .= ', ';
-			}
-			$cat_output .= '<a href="' . get_term_link( $cat, 'event_category' ) . '">' . $cat->name . '</a>';
-		}
-	}
-	?>
-	<?php 
-	// output event tags
-	if( !empty( $tag_output ) ): ?>
-	<p><span class="jce-meta-title"><i class="fa fa-bookmark"></i> Tagged:</span> <?php echo $tag_output; ?></p>
-	<?php endif; ?>
-
-	<?php 
-	// output event categories
-	if( !empty( $cat_output ) ): ?>
-	<p><span class="jce-meta-title"><i class="fa fa-tag"></i> Categories:</span> <?php echo $cat_output; ?></p>
-	<?php endif;
+    jce_get_template_part('single-event/footer');
 }
 
 function jce_add_single_back_btn(){
