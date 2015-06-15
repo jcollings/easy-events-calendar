@@ -82,32 +82,50 @@ function jce_show_archive_filter(){
 	<?php
 }
 
+/**
+ * Display Archive Prev & Next Links
+ */
+function jce_output_monthly_archive_links(){
+
+    $year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : JCE()->query->query_vars['cal_year'];
+    $month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : JCE()->query->query_vars['cal_month'];
+    $view = get_query_var( 'view' ) ? get_query_var( 'view' ) : JCE()->query->query_vars['view'];
+
+    if($view == 'upcoming'){
+        return;
+    }
+
+    if(($month - 1) <= 0){
+        $prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year - 1), 'cal_month' => 12));
+        $next_link = add_query_arg(array('view' => $view, 'cal_year' => $year, 'cal_month' => ($month+1)));
+    }elseif(($month + 1) > 12){
+        $prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month-1)));
+        $next_link = add_query_arg(array('view' => $view, 'cal_year' => ($year+1), 'cal_month' => (1)));
+    }else{
+        $prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month-1)));
+        $next_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month+1)));
+    }
+
+    ?>
+    <a class="jce-month-link jce-month-prev" href="<?php echo $prev_link; ?>">&lt;</a>
+    <a class="jce-month-link jce-month-next" href="<?php echo $next_link; ?>">&gt;</a>
+    <?php
+}
+
+/**
+ * Display Archive Heading
+ */
 function jce_output_monthly_archive_heading(){
 
-	$year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : JCE()->query->query_vars['cal_year'];
-	$month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : JCE()->query->query_vars['cal_month'];
-	$view = get_query_var( 'view' ) ? get_query_var( 'view' ) : JCE()->query->query_vars['view'];
+    $year = get_query_var( 'cal_year' ) ? get_query_var( 'cal_year' ) : JCE()->query->query_vars['cal_year'];
+    $month = get_query_var( 'cal_month' ) ? get_query_var( 'cal_month' ) : JCE()->query->query_vars['cal_month'];
+    $view = get_query_var( 'view' ) ? get_query_var( 'view' ) : JCE()->query->query_vars['view'];
 
-	if(($month - 1) <= 0){
-		$prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year - 1), 'cal_month' => 12));
-		$next_link = add_query_arg(array('view' => $view, 'cal_year' => $year, 'cal_month' => ($month+1)));
-	}elseif(($month + 1) > 12){
-		$prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month-1)));
-		$next_link = add_query_arg(array('view' => $view, 'cal_year' => ($year+1), 'cal_month' => (1)));
-	}else{
-		$prev_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month-1)));
-		$next_link = add_query_arg(array('view' => $view, 'cal_year' => ($year), 'cal_month' => ($month+1)));
-	}
+	$title = date('F, Y', strtotime("$year-$month-01"));
 
-	$title = date('F, Y', strtotime("$year-$month-01")); 
-	?>
-	<div class="jce-archive-heading">
-		<h1><?php echo $title; ?></h1>
-		<?php do_action('jce/after_archive_heading'); ?>
-		<a class="jce-month-link jce-month-prev" href="<?php echo $prev_link; ?>">&lt;</a>
-		<a class="jce-month-link jce-month-next" href="<?php echo $next_link; ?>">&gt;</a>
-	</div>
-	<?php
+    jce_get_template_part("archive-event/heading", array(
+        'title' => $title
+    ));
 }
 
 function jce_output_calendar_wrapper_open(){
@@ -177,12 +195,10 @@ function jce_display_upcoming_heading(){
 	}
 
 	$title = apply_filters( 'jce/archive_heading', $title );
-	?>
-	<div class="jce-archive-heading">
-		<h1><?php echo $title; ?></h1>
-		<?php do_action('jce/after_archive_heading'); ?>
-	</div>
-	<?php
+
+    jce_get_template_part("archive-event/heading", array(
+        'title' => $title
+    ));
 }
 
 function jce_output_pagination(){
@@ -222,46 +238,25 @@ function jce_add_single_event_content(){
 	<?php
 }
 
+/**
+ * Load event image on single event
+ */
 function jce_add_single_event_image(){
-	global $post;
-	$attachment_id = get_post_thumbnail_id($post->ID);
-	
-	if(!$attachment_id)
-		return;
-
-	$image_size = apply_filters( 'jce/single_image_size', 'full');
-	$src = wp_get_attachment_image_src( $attachment_id, $image_size);
-	?>
-	<div class="jce-event-image">
-		<img src="<?php echo $src[0]; ?>" title="<?php echo get_the_title($attachment_id ); ?>" alt="<?php echo get_the_title($attachment_id ); ?>" width="100%" />
-	</div>
-	<?php
+	jce_get_template_part('single-event/image');
 }
 
+/**
+ * Load venue details column on single event
+ */
 function jce_add_single_event_venue(){
-	?>
-	<div class="jce-two-cols">
-		<div class="jce-event-venue jce-one-col">
-			<h2>Venue</h2>
-			<p><span class="jce-meta-title">Name:</span> <?php jce_event_venue_meta(); ?><br />
-			<span class="jce-meta-title">Address:</span> <?php jce_event_venue_meta('address'); ?><br />
-			<span class="jce-meta-title">City:</span> <?php jce_event_venue_meta('city'); ?><br />
-			<span class="jce-meta-title">Postcode:</span> <?php jce_event_venue_meta('postcode'); ?></p>
-		</div>
-	<?php
+	jce_get_template_part('single-event/venue');
 }
 
+/**
+ * Load organiser details column on single event
+ */
 function jce_add_single_event_organiser(){
-	?>
-		<div class="jce-event-organiser jce-one-col">
-			<h2>Organiser</h2>
-			<p><span class="jce-meta-title">Name:</span> <?php jce_event_organiser_meta(); ?><br />
-			<span class="jce-meta-title">Phone:</span> <?php jce_event_organiser_meta('phone'); ?><br />
-			<span class="jce-meta-title">Email:</span> <?php jce_event_organiser_meta('email'); ?><br />
-			<span class="jce-meta-title">Website:</span> <?php jce_event_organiser_meta('website'); ?></p>
-		</div>
-	</div>
-	<?php
+    jce_get_template_part('single-event/organiser');
 }
 
 function jce_add_single_event_footer_meta(){

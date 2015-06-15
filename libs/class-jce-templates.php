@@ -97,7 +97,7 @@ class JCE_Templates{
 				$temp_date = date('Y-m-d', strtotime($date));
 
 				$result = $wpdb->get_row("SELECT meta_value FROM {$wpdb->prefix}postmeta WHERE post_id='{$post->ID}' AND meta_key='_revent_start_date' AND meta_value LIKE '{$temp_date}%'");
-				
+
 				if(!$result){
 					$wp_query->set_404();
 					status_header(404);

@@ -41,6 +41,9 @@ add_action('jce/after_archive_heading', 'jce_show_archive_filter', 15);
 add_action('jce/widget/before_event_calendar', 'jce_output_monthly_archive_heading');
 add_action('jce/before_event_calendar', 'jce_output_monthly_archive_heading');
 
+//display monthly prev/next links
+add_action('jce/after_archive_heading', 'jce_output_monthly_archive_links', 20);
+
 
 add_action('jce/widget/before_event_calendar', 'jce_output_calendar_wrapper_open', 0);
 add_action('jce/before_event_calendar', 'jce_output_calendar_wrapper_open', 0);

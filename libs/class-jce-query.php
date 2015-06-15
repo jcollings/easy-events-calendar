@@ -189,6 +189,12 @@ class JCE_Query{
 
 		$query = apply_filters( 'jce/setup_upcoming_query', $query);
 
+        // fix pagination issue caused due to is_singluar flag on event archive query
+        $paged = get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1;
+        $posts_per_page = 10;
+        $paged = intval($paged);
+        $query['limits'] = 'LIMIT ' . (($paged - 1) * $posts_per_page) .', ' . $posts_per_page;
+
 		// setup term queries and merge with sql
 		$tax_query = $this->setup_term_queries();
 		$query = $this->merge_query_keys($query, $tax_query);

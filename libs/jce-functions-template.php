@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-function jce_get_template_part($template){
+function jce_get_template_part($template, $vars = array()){
 
 	$located = JCE()->plugin_dir . 'templates/'.$template.'.php';
 	$template_file = get_stylesheet_directory() . '/jcevents/'.$template.'.php';
@@ -11,15 +11,20 @@ function jce_get_template_part($template){
 		$located = $template_file;
 	}
 
-	return load_template( $located, false );
+    //load template file
+    extract($vars);
+	return include $located;
 }
 
 add_filter( 'post_type_link', 'jce_post_link', 10 , 3);
 function jce_post_link($post_link, $post, $leavename){
 
-	if( $post->post_type == 'event' && JCE()->event){
-		
-		$meta = JCE()->event->get_post_meta();
+	if( $post->post_type == 'event'){
+
+        //todo: find out why previous event is set in admin event archive
+        $event = new JCE_Event($post);
+		$meta = $event->get_post_meta();
+
 		if(isset($meta['_event_start_date'])){
 			return add_query_arg(array('event_day' => date('d', strtotime($meta['_event_start_date'])), 'event_month' => date('m', strtotime($meta['_event_start_date'])), 'event_year' => date('Y', strtotime($meta['_event_start_date']))), $post_link);	
 		}
