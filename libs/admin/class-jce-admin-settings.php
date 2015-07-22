@@ -119,7 +119,9 @@ class JCE_Admin_Settings{
     private function load_settings_api(){
 
     	$site_pages = get_pages();
-    	$pages = array();
+    	$pages = array(
+		    '' => 'Please Choose an Archive Page'
+	    );
     	foreach($site_pages as $page){
     		$pages[$page->ID] = $page->post_title;
     	}

@@ -103,8 +103,10 @@ class JCEvents2 {
 
 		// load values from jce_config
 		$config = get_option('jce_config');
-		foreach($config as $key => $value){
-			$this->settings[$key] = $value;
+		if(is_array($config)) {
+			foreach ( $config as $key => $value ) {
+				$this->settings[ $key ] = $value;
+			}
 		}
 
 		if(isset($config['event_archive_view'])){
